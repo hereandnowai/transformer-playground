@@ -390,6 +390,12 @@
 		// border-radius: 3px;
 	}
 
+	:global(.textbook-content a) {
+		color: var(--textbook-highlight-color);
+		text-decoration: underline;
+		text-underline-offset: 2px;
+	}
+
 	:global(.textbook-content br) {
 		line-height: 0.8;
 	}
