@@ -17,7 +17,6 @@
 	import { expandedBlock, predictedToken, highlightedIndex, modelData } from '~/store';
 	import ProbabilityBars from './ProbabilityBars.svelte';
 	import Katex from '~/utils/Katex.svelte';
-	import { ga } from '~/utils/event';
 	import { EyeOutline, ZoomInOutline } from 'flowbite-svelte-icons';
 	import { fade } from 'svelte/transition';
 	import SoftmaxPopover from './popovers/SoftmaxPopover.svelte';

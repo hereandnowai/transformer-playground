@@ -18,7 +18,6 @@
 	import Katex from '~/utils/Katex.svelte';
 	import { Tooltip } from 'flowbite-svelte';
 	import { ATTENTION_OUT } from '~/constants/opacity';
-	import { ga } from '~/utils/event';
 	import { ZoomInOutline } from 'flowbite-svelte-icons';
 	import TextbookTooltip from '~/components/common/TextbookTooltip.svelte';
 	import { textPages } from '~/utils/textbookPages';

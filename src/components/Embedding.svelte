@@ -15,7 +15,6 @@
 	import VectorCanvas from './common/VectorCanvas.svelte';
 	import * as d3 from 'd3';
 	import HelpPopover from './common/HelpPopover.svelte';
-	import { ga } from '~/utils/event';
 	import { Tooltip } from 'flowbite-svelte';
 	import { ZoomInOutline } from 'flowbite-svelte-icons';
 
