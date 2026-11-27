@@ -1,46 +1,81 @@
-# Transformer Explainer: Interactive Learning of Text-Generative Models
+# Transformer Playground by HERE AND NOW AI
 
-Transformer Explainer is an interactive visualization tool designed to help anyone learn how Transformer-based models like GPT work. It runs a live GPT-2 model right in your browser, allowing you to experiment with your own text and observe in real time how internal components and operations of the Transformer work together to predict the next tokens. Try Transformer Explainer at http://poloclub.github.io/transformer-explainer and watch a demo video on YouTube https://youtu.be/TFUc41G2ikY.<br/><br/>
-[![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
-[![arxiv badge](https://img.shields.io/badge/arXiv-2408.04619-red)](https://arxiv.org/abs/2408.04619)
+**See how a GPT-2 transformer thinks, live in your browser.** Type a sentence and watch every step the model takes to
+guess the next word: tokens, embeddings, Query/Key/Value, multi-head attention, the output projection W<sub>O</sub>,
+the MLP (multilayer perceptron, the feed-forward network) and the final probabilities. Nothing to install, no account,
+no tracking.
 
-<a href="https://youtu.be/TFUc41G2ikY" target="_blank"><img width="100%" src='https://github.com/user-attachments/assets/0a4d8888-6555-4df5-bc71-77f1299115c3'></a>
+**Try it live: https://hereandnowai.github.io/transformer-playground/**
 
-## Live Demo
+[![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
+[![Paper: Attention Is All You Need](https://img.shields.io/badge/arXiv-1706.03762-red)](https://arxiv.org/abs/1706.03762)
 
-Try Transformer Explainer: http://poloclub.github.io/transformer-explainer
+Transformer Playground is a fork of [Transformer Explainer](https://github.com/poloclub/transformer-explainer) by the
+Polo Club of Data Science at Georgia Tech, updated for 2026 by [HERE AND NOW AI](https://hereandnowai.com) for our
+lessons on YouTube.
 
-## Research Paper
+## What is new in this fork
 
-[**Transformer Explainer: Learning LLM Transformers with Interactive Visual Explanation and Experimentations**](https://dl.acm.org/doi/pdf/10.1145/3772318.3791725).
-Aeree Cho, Grace C. Kim, Alexander Karpekov, Seongmin Lee, Alec Helbling, Benjamin Hoover, Zijie J. Wang, Minsuk Kahng, Duen Horng Chau.
-_Proceedings of the 2026 CHI Conference on Human Factors in Computing Systems._
+- **The 2017 paper, connected.** A textbook card and an article section link the playground to
+  [“Attention Is All You Need”](https://arxiv.org/abs/1706.03762): the original was an encoder-decoder for translation
+  (N = 6, d<sub>model</sub> 512, 8 heads); GPT-2 keeps only the decoder.
+- **The attention output projection W<sub>O</sub> is shown.** Click the **× W<sub>O</sub>** badge to see the 12 head
+  outputs joined and multiplied by W<sub>O</sub> (768 × 768, `c_proj` in the GPT-2 code). (Upstream issue #71.)
+- **MLP spelled out**: multilayer perceptron, the feed-forward network. (Upstream issue #89.)
+- **Dark theme by default** in the HERE AND NOW AI colours; the light theme is one click away (the dark-mode token system
+  comes from a community pull request to the original project, #90).
+- **Privacy:** Google Tag Manager, Google Analytics and every user identifier removed. The page loads no fonts or videos
+  from third parties; it only downloads the model (from this site), the ONNX Runtime WebAssembly files (jsDelivr CDN)
+  and the tokenizer (Hugging Face).
+- **`npm install` works again** (Vite 6 to match `@sveltejs/vite-plugin-svelte` 6; upstream issue #74, as in PR #85).
 
-## How to run locally
+## Run it on your computer
 
-#### Prerequisites
-
-- Node.js v20 or higher
-- NPM v10 or higher
-
-#### Steps
+You need [Node.js](https://nodejs.org/) 20 or newer (npm 10 or newer comes with it).
 
 ```bash
-git clone https://github.com/poloclub/transformer-explainer.git
-cd transformer-explainer
+git clone https://github.com/hereandnowai/transformer-playground.git
+cd transformer-playground
 npm install
 npm run dev
 ```
 
-Then, on your web browser, access http://localhost:5173.
+Then open http://localhost:5173 in your browser. The first visit downloads the GPT-2 model (about 630 MB, in 63 parts)
+into your browser, so give it a minute. It runs on your CPU through WebAssembly; a desktop or laptop browser works best.
+
+Other commands:
+
+```bash
+npm run build     # static site in ./build (served under /transformer-playground)
+npm run preview   # preview the production build
+npm run deploy    # publish ./build to the gh-pages branch (GitHub Pages)
+```
+
+## How it works
+
+- **Model:** GPT-2 (small, 124 million parameters), exported to ONNX and run in the browser with
+  [ONNX Runtime Web](https://onnxruntime.ai/) (`static/model-v2`). The model code follows Andrej Karpathy's
+  [nanoGPT](https://github.com/karpathy/nanoGPT) (`src/utils/model`).
+- **Tokenizer:** the GPT-2 tokenizer from [Transformers.js](https://github.com/xenova/transformers.js) (`Xenova/gpt2`).
+- **Interface:** [SvelteKit](https://kit.svelte.dev/) with [D3.js](https://d3js.org/), [GSAP](https://gsap.com/),
+  [KaTeX](https://katex.org/) and Tailwind CSS / Flowbite.
 
 ## Credits
 
-Transformer Explainer was created by <a href="https://aereeeee.github.io/" target="_blank">Aeree Cho</a>, <a href="https://www.linkedin.com/in/chaeyeonggracekim/" target="_blank">Grace C. Kim</a>, <a href="https://alexkarpekov.com/" target="_blank">Alexander Karpekov</a>, <a href="https://alechelbling.com/" target="_blank">Alec Helbling</a>, <a href="https://zijie.wang/" target="_blank">Jay Wang</a>, <a href="https://seongmin.xyz/" target="_blank">Seongmin Lee</a>, <a href="https://bhoov.com/" target="_blank">Benjamin Hoover</a>, and <a href="https://poloclub.github.io/polochau/" target="_blank">Polo Chau</a> at the Georgia Institute of Technology.
+- **Transformer Explainer** by Aeree Cho, Grace C. Kim, Alexander Karpekov, Seongmin Lee, Alec Helbling,
+  Benjamin Hoover, Zijie J. Wang, Minsuk Kahng and Duen Horng (Polo) Chau, Polo Club of Data Science, Georgia Tech
+  (MIT licence): https://github.com/poloclub/transformer-explainer.
+  Paper: *Transformer Explainer: Learning LLM Transformers with Interactive Visual Explanation and Experimentation*,
+  CHI 2026, [DOI 10.1145/3772318.3791725](https://doi.org/10.1145/3772318.3791725).
+- **GPT-2** by OpenAI, released under a [modified MIT licence](https://github.com/openai/gpt-2/blob/master/LICENSE).
+- **nanoGPT** by Andrej Karpathy (MIT).
+- **Transformers.js** and the `Xenova/gpt2` tokenizer by Joshua Lochner (Xenova) / Hugging Face (Apache-2.0).
+- **Dark mode** token system: community pull request poloclub/transformer-explainer#90 (author kept in the git history).
+- **Attention Is All You Need** (Vaswani et al., 2017): https://arxiv.org/abs/1706.03762.
 
-## Citation
+If you use the visualization in research, please cite the original authors:
 
-```bibTeX
+```bibtex
 @inproceedings{cho2026transformer,
   title={Transformer Explainer: Learning LLM Transformers with Interactive Visual Explanation and Experimentation},
   author={Cho, Aeree and Kim, Grace C and Karpekov, Alexander and Lee, Seongmin and Helbling, Alec and Hoover, Benjamin and Wang, Zijie J and Kahng, Minsuk and Chau, Duen Horng},
@@ -50,16 +85,19 @@ Transformer Explainer was created by <a href="https://aereeeee.github.io/" targe
 }
 ```
 
-## License
+## About HERE AND NOW AI
 
-The software is available under the [MIT License](https://github.com/poloclub/transformer-explainer/blob/main/LICENSE).
+HERE AND NOW AI teaches artificial intelligence, generative AI and agentic AI, explained simply for everyone.
+*AI is Good.*
 
-## Contact
+- Website: https://hereandnowai.com
+- Email: info@hereandnowai.com
+- YouTube: https://www.youtube.com/@hereandnow_ai
+- GitHub: https://github.com/hereandnowai
 
-If you have any questions, feel free to [open an issue](https://github.com/poloclub/transformer-explainer/issues/new/choose) or contact [Aeree Cho](https://aereeeee.github.io/) or any of the contributors listed above.
+Questions or ideas? [Open an issue](https://github.com/hereandnowai/transformer-playground/issues) or email us.
 
-## More AI explainers to check out
+## Licence
 
-- [**Diffusion Explainer**](https://poloclub.github.io/diffusion-explainer) for learning how Stable Diffusion transforms text prompt into image
-- [**CNN Explainer**](https://poloclub.github.io/cnn-explainer)
-- [**GAN Lab**](https://poloclub.github.io/ganlab) for playing with Generative Adversarial Networks in browser
+MIT. See [LICENSE](LICENSE): the original copyright of the Polo Club of Data Science (2022) is kept, and HERE AND NOW AI
+(2026) holds the copyright for the changes in this fork.
