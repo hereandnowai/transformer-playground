@@ -19,6 +19,12 @@ export const shortcutsOpen = writable(false);
 /** Share of the GPT-2 model that has been downloaded, from 0 to 1. */
 export const modelLoadProgress = writable(0);
 
+/** Set when the model download failed for good; the Generate button then offers a retry. */
+export const modelLoadError = writable<string | null>(null);
+
+/** Bumped to ask the page to try the model download again. */
+export const modelLoadRetry = writable(0);
+
 /** A prompt from a shared link that waits until the live model is ready. */
 export const pendingPrompt = writable<string | null>(null);
 

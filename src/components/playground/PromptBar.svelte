@@ -8,7 +8,7 @@
 		weightPopover,
 		isMobile
 	} from '~/store';
-	import { modelLoadProgress, pendingPrompt } from '~/store/ui';
+	import { modelLoadError, modelLoadProgress, modelLoadRetry, pendingPrompt } from '~/store/ui';
 	import { completeCurrentAnimation } from '~/utils/animation';
 	import { textPages } from '~/utils/textbookPages';
 	import { WORD_LIMIT, normalisePrompt, wordCount } from '~/utils/playground/prompt';
@@ -48,6 +48,7 @@
 	const status = $derived.by(() => {
 		if ($isMobile)
 			return 'Try the examples. Typing your own text needs a desktop or laptop browser.';
+		if ($modelLoadError) return `${$modelLoadError} Press Retry download; the examples still work.`;
 		if ($isFetchingModel)
 			return $pendingPrompt
 				? `Your shared prompt runs as soon as GPT-2 has loaded (${loadPct}%).`
@@ -153,23 +154,34 @@
 		{#if tooLong}
 			<span class="limit" title={status}>{WORD_LIMIT} words max</span>
 		{/if}
-		<button
-			type="submit"
-			class="generate-button"
-			class:loading={$isFetchingModel && !$isMobile}
-			disabled={!canGenerate}
-			title={status || 'Run GPT-2 on your prompt (Enter)'}
-			aria-keyshortcuts="Enter"
-			style="--load:{loadPct}%"
-		>
-			<span class="btn-text">
-				{#if $isFetchingModel && !$isMobile}
-					Loading {loadPct}%
-				{:else}
-					Generate
-				{/if}
-			</span>
-		</button>
+		{#if $modelLoadError}
+			<button
+				type="button"
+				class="generate-button retry"
+				title="{$modelLoadError} Try again (parts already downloaded are kept)."
+				onclick={() => modelLoadRetry.update((n) => n + 1)}
+			>
+				<span class="btn-text">Retry download</span>
+			</button>
+		{:else}
+			<button
+				type="submit"
+				class="generate-button"
+				class:loading={$isFetchingModel && !$isMobile}
+				disabled={!canGenerate}
+				title={status || 'Run GPT-2 on your prompt (Enter)'}
+				aria-keyshortcuts="Enter"
+				style="--load:{loadPct}%"
+			>
+				<span class="btn-text">
+					{#if $isFetchingModel && !$isMobile}
+						Loading {loadPct}%
+					{:else}
+						Generate
+					{/if}
+				</span>
+			</button>
+		{/if}
 	</div>
 	<p id="prompt-status" class="sr-only" aria-live="polite">{status}</p>
 </form>

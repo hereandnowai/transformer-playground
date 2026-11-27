@@ -47,7 +47,13 @@
 	import InsightsDrawer from '~/components/playground/InsightsDrawer.svelte';
 	import WelcomeCard from '~/components/playground/WelcomeCard.svelte';
 	import MobileView from '~/components/playground/MobileView.svelte';
-	import { isCompact, modelLoadProgress, pendingPrompt } from '~/store/ui';
+	import {
+		isCompact,
+		modelLoadError,
+		modelLoadProgress,
+		modelLoadRetry,
+		pendingPrompt
+	} from '~/store/ui';
 	import { applySharedState, parseSharedState, syncUrl } from '~/utils/playground/urlState';
 
 	// The tokenizer comes from the Hugging Face Hub; skip the probe for a local copy (a 404).
@@ -71,15 +77,7 @@
 
 			unsubscribe = subscribeInputs(gpt2Tokenizer);
 
-			if (!$isMobile) {
-				await fetchModel();
-				// A custom prompt from a shared link runs as soon as the live model is ready.
-				const waiting = $pendingPrompt;
-				if (waiting) {
-					pendingPrompt.set(null);
-					inputText.set(waiting);
-				}
-			}
+			if (!$isMobile) await loadModel();
 		})();
 
 		return () => {
@@ -87,6 +85,31 @@
 			unsubscribe();
 		};
 	});
+
+	/** Downloads the model; on failure, offers a retry instead of loading forever. */
+	const loadModel = async () => {
+		modelLoadError.set(null);
+		modelLoadProgress.set(0);
+		try {
+			await fetchModel();
+		} catch (error) {
+			console.error('Model download failed:', error);
+			modelLoadError.set('The GPT-2 download was interrupted.');
+			return;
+		}
+		// A custom prompt from a shared link runs as soon as the live model is ready.
+		const waiting = $pendingPrompt;
+		if (waiting) {
+			pendingPrompt.set(null);
+			inputText.set(waiting);
+		}
+	};
+
+	let retries = 0;
+	$: if ($modelLoadRetry > retries) {
+		retries = $modelLoadRetry;
+		loadModel();
+	}
 
 	// Fetch model onnx
 	const fetchModel = async () => {

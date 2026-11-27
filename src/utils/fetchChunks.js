@@ -1,47 +1,68 @@
 const CACHE_PREFIX = 'onnx-model-cache';
 const CACHE_NAME = `${CACHE_PREFIX}-v2`;
 
+/** Parallel downloads at a time. Dozens of large parallel streams can be reset by the network. */
+const CONCURRENCY = 6;
+/** Extra attempts per chunk after a failed download, with a growing pause in between. */
+const RETRIES = 4;
+
+/** @param {number} ms */
+const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * Reads one chunk from the cache, or downloads it (with retries) and caches it.
+ * @param {string} url
+ * @param {Cache | null} cache
+ * @returns {Promise<{ buffer: ArrayBuffer, cached: boolean }>}
+ */
+async function getChunk(url, cache) {
+	const hit = await cache?.match(url).catch(() => undefined);
+	if (hit) return { buffer: await hit.arrayBuffer(), cached: true };
+
+	for (let attempt = 0; ; attempt++) {
+		try {
+			const response = await fetch(url);
+			if (!response.ok) throw new Error(`HTTP ${response.status} for ${url}`);
+			const buffer = await response.arrayBuffer();
+			// Caching is a bonus: a full or unavailable cache must not stop the download.
+			await cache
+				?.put(url, new Response(new Blob([buffer]), { headers: response.headers }))
+				.catch(() => undefined);
+			return { buffer, cached: false };
+		} catch (error) {
+			if (attempt >= RETRIES) throw error;
+			await pause(1000 * 2 ** attempt);
+		}
+	}
+}
+
 /**
  * @param {string[]} chunkUrls
  * @param {((share: number) => void) | undefined} onProgress
  */
 async function fetchModelChunks(chunkUrls, onProgress) {
 	await clearOldCaches();
+	const cache =
+		typeof caches === 'undefined' ? null : await caches.open(CACHE_NAME).catch(() => null);
 
+	/** @type {ArrayBuffer[]} */
+	const modelBuffers = new Array(chunkUrls.length);
 	let hasCache = false;
-	const cache = await caches.open(CACHE_NAME);
-	const cachedResponses = await Promise.all(
-		chunkUrls.map((/** @type {string} */ url) => cache.match(url))
-	);
-
+	let next = 0;
 	let done = 0;
-	/** @param {ArrayBuffer} buffer */
-	const tick = (buffer) => {
-		done += 1;
-		onProgress?.(done / chunkUrls.length);
-		return buffer;
+
+	const worker = async () => {
+		while (next < chunkUrls.length) {
+			const index = next++;
+			const { buffer, cached } = await getChunk(chunkUrls[index], cache);
+			modelBuffers[index] = buffer;
+			hasCache ||= cached;
+			done += 1;
+			onProgress?.(done / chunkUrls.length);
+		}
 	};
 
-	// add cache
-	const fetchPromises = chunkUrls.map((/** @type {string} */ url, /** @type {number} */ index) => {
-		if (!cachedResponses[index]) {
-			// console.log(`Fetching and caching: ${url}`);
-			return fetch(url).then((response) => {
-				if (response.ok) {
-					cache.put(url, response.clone());
-					return response.arrayBuffer().then(tick);
-				} else {
-					throw new Error(`Failed to fetch ${url}`);
-				}
-			});
-		} else {
-			hasCache = true;
-			// console.log(`Using cached version: ${url}`);
-			return cachedResponses[index].arrayBuffer().then(tick);
-		}
-	});
-
-	const modelBuffers = await Promise.all(fetchPromises);
+	await Promise.all(Array.from({ length: Math.min(CONCURRENCY, chunkUrls.length) }, worker));
 	return { hasCache, modelBuffers };
 }
 
@@ -64,11 +85,11 @@ export async function fetchAndMergeChunks(urls, onProgress) {
 }
 
 async function clearOldCaches() {
-	const cacheNames = await caches.keys();
+	if (typeof caches === 'undefined') return;
+	const cacheNames = await caches.keys().catch(() => []);
 	await Promise.all(
 		cacheNames.map((name) => {
 			if (name !== CACHE_NAME && name.includes(CACHE_PREFIX)) {
-				console.log(`Deleting old cache: ${name}`);
 				return caches.delete(name);
 			}
 		})
