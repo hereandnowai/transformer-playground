@@ -6,6 +6,7 @@
 	import AttentionWeightPopover from './popovers/AttentionWeightPopover.svelte';
 	import MLPWeightPopover from './popovers/MLPWeightPopover.svelte';
 	import MLPDownWeightPopover from './popovers/MLPDownWeightPopover.svelte';
+	import OutputProjectionPopover from './popovers/OutputProjectionPopover.svelte';
 
 	import LogitWeightPopover from './popovers/LogitWeightPopover.svelte';
 	import { ArrowUpRightDownLeftOutline } from 'flowbite-svelte-icons';
@@ -151,6 +152,17 @@
 		role="group"
 	>
 		<AttentionWeightPopover></AttentionWeightPopover>
+	</div>
+{/if}
+{#if $weightPopover === 'outProj'}
+	<div
+		bind:this={popoverEl}
+		class="mlp-weight-popover weight-popover"
+		style={`left:${mlpPos.left}px;top:${mlpPos.top}px;`}
+		in:fade={{ duration: 300 }}
+		role="group"
+	>
+		<OutputProjectionPopover></OutputProjectionPopover>
 	</div>
 {/if}
 {#if $weightPopover === 'mlpUp'}

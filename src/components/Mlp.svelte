@@ -7,6 +7,8 @@
 	import { Tooltip } from 'flowbite-svelte';
 	import { onClickReadMore } from '~/utils/event';
 	import TextbookTooltip from '~/components/common/TextbookTooltip.svelte';
+	import { weightPopover } from '~/store';
+	import { textPages } from '~/utils/textbookPages';
 
 	export let className: string | undefined = undefined;
 
@@ -46,7 +48,7 @@
 	$: isLastBlock = $blockIdx === $modelMeta?.layer_num - 1;
 </script>
 
-<div class={classNames('mlp', 'mlpUp', 'mlpDown', className)} data-click="mlp-step">
+<div class={classNames('mlp', 'mlpUp', 'mlpDown', 'outProj', className)} data-click="mlp-step">
 	<div
 		class="title"
 		on:mouseenter={handleMouseEnter}
@@ -55,14 +57,28 @@
 		data-click="mlp-step-title"
 	>
 		<div class="w-max">
-			<TextbookTooltip id="mlp">MLP</TextbookTooltip>
+			<TextbookTooltip id="mlp"
+				><span title="MLP: multilayer perceptron, the feed-forward network"
+					>MLP <span class="mlp-full">(multilayer perceptron)</span></span
+				></TextbookTooltip
+			>
 		</div>
 	</div>
 
 	<div class="content relative">
 		<div class="bounding mlp-bounding" class:active={isHovered}></div>
-		<div class="layer mlpUp first-layer flex">
+		<div class="layer mlpUp outProj first-layer flex">
 			<div class="column initial">
+				<button
+					type="button"
+					class="w-o-badge"
+					aria-label="Show the attention output projection W_O"
+					on:click={(e) => {
+						e.stopPropagation();
+						textPages.find((page) => page.id === 'output-projection')?.complete?.();
+						weightPopover.set($weightPopover === 'outProj' ? null : 'outProj');
+					}}>× W<sub>O</sub></button
+				>
 				{#each $tokens as token, index}
 					<div
 						class="cell"
@@ -88,7 +104,7 @@
 				{/each}
 			</div>
 			<Tooltip triggeredBy={'.step.mlp .initial .cell'} class="popover" placement="right">
-				vector({$modelMeta.dimension})</Tooltip
+				attention output after W<sub>O</sub>, vector({$modelMeta.dimension})</Tooltip
 			>
 			<OperationGroup type="dropout" id={'mlp-first-dropout'} />
 			<OperationGroup type="residual-end" id={'embedding-residual'} />
@@ -154,6 +170,32 @@
 			// cursor: help;
 		}
 
+		.mlp-full {
+			font-size: 0.8em;
+			color: var(--ink-muted);
+		}
+		.column.initial {
+			position: relative;
+		}
+		.w-o-badge {
+			position: absolute;
+			top: -1.9rem;
+			left: 50%;
+			transform: translateX(-50%);
+			z-index: $ABOVE_COLUMN;
+			padding: 0 0.4rem;
+			border-radius: 0.3rem;
+			border: 1px solid var(--accent-purple-500);
+			background: var(--surface);
+			color: var(--accent-purple-700);
+			font-size: 0.8rem;
+			line-height: 1.4rem;
+			white-space: nowrap;
+			cursor: pointer;
+			&:hover {
+				background: var(--accent-purple-100);
+			}
+		}
 		.mlp-bounding {
 			top: -0.5rem;
 			padding: 0.5rem 0;

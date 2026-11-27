@@ -331,14 +331,30 @@
 				<span class="v-color">Value</span> matrix to get the
 				<span class="purple-color">final output</span>
 				of the self-attention mechanism. GPT-2 has <code>12</code> self-attention heads, each capturing
-				different relationships between tokens. The outputs of these heads are concatenated and passed
-				through a linear projection.
+				different relationships between tokens. The outputs of these heads are concatenated (12 × 64
+				= 768 numbers per token) and passed through a linear projection.
+			</p>
+		</div>
+		<div class="article-subsection-l2">
+			<h4>Step 5: Output Projection (W<sub>O</sub>)</h4>
+			<p>
+				The concatenated vector is multiplied by one more learned matrix, the
+				<strong>output projection W<sub>O</sub></strong> (768 × 768, plus a bias; called
+				<code>c_proj</code> in the GPT-2 code). Concatenation only places the heads side by side; W<sub
+					>O</sub
+				>
+				mixes what the different heads found into one vector for each token. This is the
+				<em>W<sup>O</sup></em> in the 2017 paper's formula MultiHead(Q, K, V) = Concat(head<sub
+					>1</sub
+				>, …, head<sub>h</sub>) W<sup>O</sup>. Click the <strong>× W<sub>O</sub></strong> badge in the
+				visualization to see it. The result then goes through dropout and is added back to the input
+				by the residual connection.
 			</p>
 		</div>
 	</div>
 
 	<div class="article-section" id="article-activation" data-click="article-mlp">
-		<h3>MLP: Multi-Layer Perceptron</h3>
+		<h3>MLP: Multilayer Perceptron (the Feed-Forward Network)</h3>
 
 		<div class="figure">
 			<img src="./article_assets/mlp.png" width="70%" align="middle" />
@@ -350,9 +366,9 @@
 
 		<p>
 			After the multiple heads of self-attention capture the diverse relationships between the input
-			tokens, the concatenated outputs are passed through the Multilayer Perceptron (MLP) layer to
-			enhance the model's representational capacity. The MLP block consists of two linear
-			transformations with a <a
+			tokens, the projected attention outputs are passed through the multilayer perceptron (MLP),
+			also called the feed-forward network, to enhance the model's representational capacity. The
+			MLP block consists of two linear transformations with a <a
 				href="https://en.wikipedia.org/wiki/Rectified_linear_unit#Gaussian-error_linear_unit_(GELU)"
 				>GELU</a
 			> activation function in between.

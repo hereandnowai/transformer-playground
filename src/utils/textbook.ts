@@ -97,7 +97,7 @@ export function highlightPath(value) {
 		.querySelectorAll('.steps')
 		.forEach((el) => ((el as HTMLElement).style.pointerEvents = 'none'));
 
-	if (value === 'mlpUp' || value === 'mlpDown') {
+	if (value === 'mlpUp' || value === 'mlpDown' || value === 'outProj') {
 		document
 			.querySelectorAll(`div.step.${value} .layer`)
 			.forEach((el) => ((el as HTMLElement).style.opacity = '0.3'));

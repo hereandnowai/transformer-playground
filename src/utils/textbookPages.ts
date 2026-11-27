@@ -71,7 +71,7 @@ export const textPages: TextbookPage[] = [
 		id: 'transformer-architecture',
 		title: 'Transformer Architecture',
 		content:
-			'<p>Transformer has three main parts:</p><div class="numbered-list"><div class="numbered-item"><span class="number-circle">1</span><div class="item-content"><strong>Embeddings</strong> turn text into numbers.</div></div><div class="numbered-item"><span class="number-circle">2</span><div class="item-content"><strong>Transformer blocks</strong> mix information with Self-Attention and refine it with an MLP.</div></div><div class="numbered-item"><span class="number-circle">3</span><div class="item-content"><strong>Probabilities</strong> determine the likelihood of each next token.</div></div></div>',
+			'<p>Transformer has three main parts:</p><div class="numbered-list"><div class="numbered-item"><span class="number-circle">1</span><div class="item-content"><strong>Embeddings</strong> turn text into numbers.</div></div><div class="numbered-item"><span class="number-circle">2</span><div class="item-content"><strong>Transformer blocks</strong> mix information with Self-Attention and refine it with an MLP (multilayer perceptron, the feed-forward network).</div></div><div class="numbered-item"><span class="number-circle">3</span><div class="item-content"><strong>Probabilities</strong> determine the likelihood of each next token.</div></div></div>',
 		on: () => {
 			const selectors = [
 				'.step.embedding',
@@ -172,7 +172,7 @@ export const textPages: TextbookPage[] = [
 	{
 		id: 'blocks',
 		title: 'Repetitive Transformer Blocks',
-		content: `<p>A <strong>Transformer block</strong> is the main unit of processing in the model. It has two parts:</p><ul><li><strong>Multi-head self-attention</strong> – lets tokens share information</li><li><strong>MLP</strong> – refines each token's details</li></ul><p>Models stack many blocks so token representations become richer as they pass through. GPT-2 (small) has 12 of them.</p>`,
+		content: `<p>A <strong>Transformer block</strong> is the main unit of processing in the model. It has two parts:</p><ul><li><strong>Multi-head self-attention</strong> – lets tokens share information</li><li><strong>MLP</strong> (multilayer perceptron, the feed-forward network) – refines each token's details</li></ul><p>Models stack many blocks so token representations become richer as they pass through. GPT-2 (small) has 12 of them.</p>`,
 		on: function () {
 			this.timeoutId = setTimeout(
 				() => {
@@ -290,7 +290,7 @@ export const textPages: TextbookPage[] = [
 		id: 'output-concatenation',
 		title: 'Attention Output & Concatenation',
 		content:
-			'<p>Each head <span class="highlight">multiplies its <span class="purple">attention scores</span> with the <span class="green">Value</span> embeddings to produce its attention output</span>—a refined representation of each token after considering context.</p><p>GPT-2 (small) has 12 such outputs, which are concatenated to form a single vector of the original size (768 numbers).</p>',
+			'<p>Each head <span class="highlight">multiplies its <span class="purple">attention scores</span> with the <span class="green">Value</span> embeddings to produce its attention output</span>—a refined representation of each token after considering context.</p><p>GPT-2 (small) has 12 such outputs, which are concatenated to form a single vector of the original size (768 numbers). Next, the <strong>output projection W<sub>O</sub></strong> mixes them.</p>',
 		on: function () {
 			this.timeoutId = setTimeout(
 				() => {
@@ -312,10 +312,35 @@ export const textPages: TextbookPage[] = [
 		}
 	},
 	{
-		id: 'mlp',
-		title: 'MLP (Multi-Layer Perceptron)',
+		id: 'output-projection',
+		title: 'Output Projection (Wₒ)',
 		content:
-			'<p>The attention output goes through an <strong>MLP</strong> to refine token representations. A Linear layer changes embedding values and size using learned weights and bias, then a non-linear activation decides how much each value passes.</p><p>Many activation types exist; GPT-2 uses <strong>GELU</strong>, which lets small values pass partially and large values pass fully, helping capture both subtle and strong patterns.</p>',
+			'<p>Joining the 12 head outputs only places them side by side. One more learned matrix, the <strong>output projection W<sub>O</sub></strong> (768 × 768 plus a bias, <code>c_proj</code> in the GPT-2 code), mixes what the heads found into one 768-number vector per token.</p><p>This is the W<sup>O</sup> in the 2017 paper: MultiHead(Q, K, V) = Concat(head<sub>1</sub>, …, head<sub>h</sub>) W<sup>O</sup>. Click <strong>× W<sub>O</sub></strong> to see the multiplication.</p>',
+		on: function () {
+			this.timeoutId = setTimeout(
+				() => {
+					highlightElements(['.mlp .w-o-badge', '.mlp .column.initial']);
+				},
+				get(isExpandOrCollapseRunning) ? 500 : 0
+			);
+		},
+		out: function () {
+			if (this.timeoutId) {
+				clearTimeout(this.timeoutId);
+				this.timeoutId = undefined;
+			}
+			removeHighlightFromElements(['.mlp .w-o-badge', '.mlp .column.initial']);
+			weightPopover.set(null);
+		},
+		complete: () => {
+			removeFingerFromElements(['.mlp .w-o-badge']);
+		}
+	},
+	{
+		id: 'mlp',
+		title: 'MLP (multilayer perceptron, the feed-forward network)',
+		content:
+			'<p>The attention output goes through an <strong>MLP</strong> (multilayer perceptron, also called the feed-forward network) to refine token representations. A Linear layer changes embedding values and size using learned weights and bias, then a non-linear activation decides how much each value passes.</p><p>Many activation types exist; GPT-2 uses <strong>GELU</strong>, which lets small values pass partially and large values pass fully, helping capture both subtle and strong patterns.</p>',
 		on: () => {
 			highlightElements(['.step.mlp', '.operation-col.activation']);
 		},
