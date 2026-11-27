@@ -727,6 +727,13 @@
 		margin-top: 1rem;
 		border-collapse: collapse;
 		font-size: 0.95rem;
+
+		// Phones: the table scrolls sideways instead of widening the page.
+		@media (max-width: 599px) {
+			display: block;
+			overflow-x: auto;
+			font-size: 0.85rem;
+		}
 		th,
 		td {
 			text-align: left;
