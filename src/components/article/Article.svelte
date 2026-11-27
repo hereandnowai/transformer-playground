@@ -666,9 +666,11 @@
 			project.
 		</p>
 		<p>
-			<strong>Transformer Playground</strong> is maintained by HERE AND NOW AI, which adds a dark
-			theme, the attention output projection (W<sub>O</sub>), a link to the 2017 paper, and removes
-			all analytics and tracking. The source code is open under the MIT licence:
+			<strong>Transformer Playground</strong> is built and maintained by HERE AND NOW AI. It adds a
+			new light and dark design, Story mode (a guided 9-step tour), an attention heatmap, the
+			next-word race, shareable links, keyboard shortcuts, a phone layout, the attention output
+			projection (W<sub>O</sub>) and a link to the 2017 paper, and it removes all analytics and
+			tracking. The source code is open under the MIT licence:
 			<a
 				href="https://github.com/hereandnowai/transformer-playground"
 				target="_blank"
@@ -705,10 +707,13 @@
 
 <style lang="scss">
 	a {
-		color: var(--accent-blue-500);
+		color: var(--link);
+		text-decoration: underline;
+		text-decoration-color: color-mix(in srgb, var(--link) 35%, transparent);
+		text-underline-offset: 3px;
 
 		&:hover {
-			color: var(--accent-blue-700);
+			text-decoration-color: currentColor;
 		}
 	}
 
@@ -850,7 +855,7 @@
 	}
 
 	#description .video-link {
-		color: var(--accent-blue-600);
+		color: var(--link);
 		cursor: pointer;
 		font-weight: normal;
 		text-decoration: none;
