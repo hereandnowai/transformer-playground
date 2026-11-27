@@ -15,6 +15,7 @@
 	import LoadingDots from '~/components/common/LoadingDots.svelte';
 
 	let editor: HTMLSpanElement | undefined = $state();
+	let field: HTMLDivElement | undefined = $state();
 
 	/** The text in the box. Once the box is focused, the predicted word is folded into it. */
 	let draft = $state('');
@@ -28,6 +29,14 @@
 		draft = text;
 		merged = false;
 		if (editor && document.activeElement !== editor) editor.innerText = text;
+	});
+
+	// Long prompts keep their end (and the predicted word) in view.
+	$effect(() => {
+		void draft;
+		void showPrediction;
+		void predicted;
+		if (field) field.scrollLeft = field.scrollWidth;
 	});
 
 	const tooLong = $derived(wordCount(merged ? draft : draft + predicted) > WORD_LIMIT);
@@ -106,6 +115,7 @@
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div
+			bind:this={field}
 			class="field"
 			onclick={() => {
 				editor?.focus();
@@ -131,7 +141,10 @@
 				onpaste={onPaste}
 			></span>
 			{#if showPrediction}
-				<mark class="prediction" title="The word GPT-2 picked next">{predicted}</mark>
+				{#if /^\s/.test(predicted)}<span class="gap"> </span>{/if}<mark
+					class="prediction"
+					title="The word GPT-2 picked next">{predicted.trimStart()}</mark
+				>
 			{/if}
 			{#if $isModelRunning}
 				<span class="running-dots"><LoadingDots /></span>
@@ -203,7 +216,6 @@
 		min-width: 0;
 		display: flex;
 		align-items: center;
-		justify-content: flex-end; // keeps the end of a long prompt visible
 		overflow: hidden;
 		white-space: nowrap;
 		cursor: text;
@@ -247,6 +259,9 @@
 	}
 	:global(html.dark) .prediction {
 		color: var(--brand-ink);
+	}
+	.gap {
+		white-space: pre;
 	}
 	.running-dots {
 		flex-shrink: 0;
