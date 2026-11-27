@@ -49,7 +49,7 @@
 		</p>
 		<p>
 			GPT-2 family of models are prominent examples of text-generative Transformers. Transformer
-			Explainer is powered by the
+			Playground is powered by the
 			<a href="https://huggingface.co/openai-community/gpt2" title="Hugging Face" target="_blank"
 				>GPT-2</a
 			>
@@ -505,7 +505,7 @@
 	<div class="article-section" data-click="article-interactive-features">
 		<h1>Interactive Features</h1>
 		<p>
-			Transformer Explainer is built to be interactive and allows you to explore the inner workings
+			Transformer Playground is built to be interactive and allows you to explore the inner workings
 			of the Transformer. Here are some of the interactive features you can play with:
 		</p>
 
@@ -534,22 +534,25 @@
 	</div>
 
 	<div class="article-section" data-click="article-video">
-		<h2>Video Tutorial</h2>
-		<div class="video-container">
-			<iframe
-				src="https://www.youtube.com/embed/ECR4oAwocjs"
-				frameborder="0"
-				allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-				allowfullscreen
-			>
-			</iframe>
-		</div>
-	</div>
-
-	<div class="article-section" data-click="article-implementation">
-		<h2>How is Transformer Explainer Implemented?</h2>
+		<h2>Video Tutorials</h2>
 		<p>
-			Transformer Explainer features a live GPT-2 (small) model running directly in the browser.
+			Learn transformers step by step, explained simply, on the
+			<a href="https://www.youtube.com/@hereandnow_ai" target="_blank" rel="noopener"
+				>HERE AND NOW AI YouTube channel</a
+			>.
+		</p>
+		<p>
+			Watch the
+			<a href="https://www.youtube.com/watch?v=ECR4oAwocjs" target="_blank" rel="noopener"
+				>original video tutorial</a
+			> by the Transformer Explainer team on YouTube. (We link to videos instead of embedding them, so
+			this page loads nothing from YouTube unless you click.)
+		</p>
+	</div>
+	<div class="article-section" data-click="article-implementation">
+		<h2>How is Transformer Playground Implemented?</h2>
+		<p>
+			Transformer Playground features a live GPT-2 (small) model running directly in the browser.
 			This model is derived from the PyTorch implementation of GPT by Andrej Karpathy's
 			<a href="https://github.com/karpathy/nanoGPT" title="Github" target="_blank"
 				>nanoGPT project</a
@@ -564,11 +567,17 @@
 		</p>
 	</div>
 
-	<div class="article-section" data-click="article-credit">
-		<h2>Who developed the Transformer Explainer?</h2>
+	<div class="article-section" id="credits" data-click="article-credit">
+		<h2>Credits</h2>
 		<p>
+			<strong
+				>Based on
+				<a href="https://github.com/poloclub/transformer-explainer" target="_blank" rel="noopener"
+					>Transformer Explainer</a
+				>
+				by the Polo Club of Data Science, Georgia Tech (MIT licence).</strong
+			>
 			Transformer Explainer was created by
-
 			<a href="https://aereeeee.github.io/" target="_blank">Aeree Cho</a>,
 			<a href="https://www.linkedin.com/in/chaeyeonggracekim/" target="_blank">Grace C. Kim</a>,
 			<a href="https://alexkarpekov.com/" target="_blank">Alexander Karpekov</a>,
@@ -577,9 +586,60 @@
 			<a href="https://seongmin.xyz/" target="_blank">Seongmin Lee</a>,
 			<a href="https://bhoov.com/" target="_blank">Benjamin Hoover</a>, and
 			<a href="https://poloclub.github.io/polochau/" target="_blank">Polo Chau</a>
-
-			at the Georgia Institute of Technology.
+			at the Georgia Institute of Technology. Read their paper:
+			<a href="https://doi.org/10.1145/3772318.3791725" target="_blank" rel="noopener"
+				>Transformer Explainer (CHI 2026), DOI 10.1145/3772318.3791725</a
+			>.
 		</p>
+		<p>
+			The model is
+			<a href="https://github.com/openai/gpt-2" target="_blank" rel="noopener"
+				>GPT-2 (small) by OpenAI</a
+			>
+			(modified MIT licence), loaded through Andrej Karpathy's
+			<a href="https://github.com/karpathy/nanoGPT" target="_blank" rel="noopener">nanoGPT</a>, and
+			text is split into tokens with the
+			<a href="https://github.com/xenova/transformers.js" target="_blank" rel="noopener"
+				>Transformers.js</a
+			>
+			GPT-2 tokenizer by Xenova. The dark theme started from a community contribution to the original
+			project.
+		</p>
+		<p>
+			<strong>Transformer Playground</strong> is maintained by HERE AND NOW AI, which adds a dark
+			theme, the attention output projection (W<sub>O</sub>), a link to the 2017 paper, and removes
+			all analytics and tracking. The source code is open under the MIT licence:
+			<a
+				href="https://github.com/hereandnowai/transformer-playground"
+				target="_blank"
+				rel="noopener">github.com/hereandnowai/transformer-playground</a
+			>.
+		</p>
+	</div>
+	<div class="article-section about-hnai" id="about" data-click="article-about">
+		<h2>About HERE AND NOW AI</h2>
+		<p>
+			HERE AND NOW AI teaches artificial intelligence, generative AI and agentic AI, explained
+			simply for everyone. <em>AI is Good.</em>
+		</p>
+		<ul class="contact">
+			<li>
+				Website: <a href="https://hereandnowai.com" target="_blank" rel="noopener"
+					>hereandnowai.com</a
+				>
+			</li>
+			<li>Email: <a href="mailto:info@hereandnowai.com">info@hereandnowai.com</a></li>
+			<li>
+				YouTube: <a href="https://www.youtube.com/@hereandnow_ai" target="_blank" rel="noopener"
+					>@hereandnow_ai</a
+				>
+			</li>
+			<li>
+				GitHub: <a href="https://github.com/hereandnowai" target="_blank" rel="noopener"
+					>github.com/hereandnowai</a
+				>
+			</li>
+		</ul>
 	</div>
 </div>
 
@@ -592,6 +652,11 @@
 		}
 	}
 
+	:global(html.dark) #description h1,
+	:global(html.dark) #description h2 {
+		border-left: 4px solid var(--brand);
+		padding-left: 0.75rem;
+	}
 	.bold-purple {
 		color: var(--accent-purple-700);
 		font-weight: bold;
@@ -625,23 +690,6 @@
 	.architecture-section {
 		padding-top: 1rem;
 	}
-	.video-container {
-		position: relative;
-		padding-bottom: 56.25%; /* 16:9 aspect ratio */
-		height: 0;
-		overflow: hidden;
-		max-width: 100%;
-		background: #000;
-	}
-
-	.video-container iframe {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-	}
-
 	#description {
 		padding-bottom: 3rem;
 		margin-left: auto;
@@ -650,15 +698,14 @@
 	}
 
 	#description h1 {
-		color: var(--accent-purple-700);
+		color: var(--heading);
 		font-size: 2.2rem;
 		font-weight: 300;
 		padding-top: 1rem;
 	}
 
 	#description h2 {
-		// color: #444;
-		color: var(--accent-purple-700);
+		color: var(--heading);
 		font-size: 2rem;
 		font-weight: 300;
 		padding-top: 1rem;

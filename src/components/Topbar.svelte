@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { page } from '$app/stores';
+	import { base } from '$app/paths';
 	import InputForm from '~/components/InputForm.svelte';
 	import Sampling from '~/components/Sampling.svelte';
 	import { MoonOutline, SunOutline } from 'flowbite-svelte-icons';
@@ -14,9 +15,19 @@
 </script>
 
 <div class="top-bar flex w-full items-center gap-4 px-10 py-2 pb-3" class:active={isActive}>
-	<div class="logo text-bold text-gray-700" data-click="logo">
-		T<span class="small">RANSFORMER</span> E<span class="small">XPLAINER</span>
-	</div>
+	<a
+		class="brand flex items-center gap-3"
+		href="https://hereandnowai.com"
+		target="_blank"
+		rel="noopener"
+		title="HERE AND NOW AI: AI is Good"
+	>
+		<img class="mark" src={`${base}/hereandnowai-mark.png`} alt="HERE AND NOW AI logo" />
+		<span class="names flex flex-col">
+			<span class="logo">Transformer Playground</span>
+			<span class="by">by <strong>HERE AND NOW AI</strong></span>
+		</span>
+	</a>
 	<div class="inputs flex grow items-center">
 		<div class="input-wrapper w-full" class:active={isActive}>
 			{#if !isAboutPage}
@@ -25,11 +36,13 @@
 		</div>
 	</div>
 	<div class="icons flex items-center gap-3">
-		<!-- arxiv -->
+		<!-- the 2017 paper -->
 		<a
-			href="https://dl.acm.org/doi/pdf/10.1145/3772318.3791725"
+			href="https://arxiv.org/abs/1706.03762"
 			target="_blank"
-			data-click="pdf-btn"
+			rel="noopener"
+			title="Read the 2017 paper: Attention Is All You Need"
+			aria-label="Read the 2017 paper: Attention Is All You Need"
 		>
 			<svg
 				class="h-6 w-6"
@@ -48,7 +61,13 @@
 			</svg>
 		</a>
 		<!-- video -->
-		<a href="https://www.youtube.com/watch?v=ECR4oAwocjs" target="_blank" data-click="ytb-btn">
+		<a
+			href="https://www.youtube.com/@hereandnow_ai"
+			target="_blank"
+			rel="noopener"
+			title="HERE AND NOW AI on YouTube"
+			aria-label="HERE AND NOW AI on YouTube"
+		>
 			<svg
 				class="h-6 w-6"
 				aria-hidden="true"
@@ -67,9 +86,11 @@
 		</a>
 		<!-- repo -->
 		<a
-			href="https://github.com/poloclub/transformer-explainer"
+			href="https://github.com/hereandnowai/transformer-playground"
 			target="_blank"
-			data-click="github_btn"
+			rel="noopener"
+			title="Source code on GitHub"
+			aria-label="Source code on GitHub"
 		>
 			<svg
 				class="h-6 w-6"
@@ -115,28 +136,38 @@
 			transition: opacity 0.2s;
 			pointer-events: none;
 		}
-		.logo {
+		.brand {
 			flex-shrink: 0;
 			white-space: nowrap;
-			font-family: 'Jersey 10', sans-serif;
+			text-decoration: none;
 
-			font-optical-sizing: auto;
-			font-style: normal;
-
-			font-size: 2rem;
-			// color: theme('colors.blue.800');
-
-			background: linear-gradient(
-				to right,
-				theme('colors.blue.500') 0%,
-				theme('colors.purple.500') 60%
-			);
-			-webkit-background-clip: text;
-			-webkit-text-fill-color: transparent;
-
-			.small {
-				font-size: 1.8rem;
+			.mark {
+				width: 2.6rem;
+				height: 2.6rem;
+				border-radius: 0.4rem;
 			}
+			.logo {
+				font-size: 1.45rem;
+				font-weight: 700;
+				line-height: 1.1;
+				letter-spacing: -0.01em;
+				color: var(--ink-strong);
+			}
+			.by {
+				font-size: 0.8rem;
+				line-height: 1.2;
+				color: var(--ink-muted);
+				strong {
+					font-weight: 600;
+					color: var(--ink-secondary);
+				}
+			}
+			&:hover .by strong {
+				color: var(--accent-purple-600);
+			}
+		}
+		:global(html.dark) & .brand:hover .by strong {
+			color: var(--brand);
 		}
 		.icons {
 			flex-shrink: 0;

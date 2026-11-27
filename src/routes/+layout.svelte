@@ -6,6 +6,7 @@
 	import { isLoaded, rootRem } from '~/store';
 	import { initTheme, predictedColor } from '~/store/theme';
 	import Article from '~/components/article/Article.svelte';
+	import Footer from '~/components/Footer.svelte';
 	import { onMount } from 'svelte';
 	import { Spinner } from 'flowbite-svelte';
 	import Alert from '~/components/Alert.svelte';
@@ -68,13 +69,14 @@
 			{#if $isLoaded}
 				<slot />
 			{:else}
-				<div class="flex h-full w-full items-center justify-center"><Spinner color="purple" /></div>
+				<div class="flex h-full w-full items-center justify-center"><Spinner color="yellow" /></div>
 			{/if}
 		</main>
 	</div>
 	<div class="article h-auto w-full">
 		<Article></Article>
 	</div>
+	<Footer />
 </div>
 
 <!-- <div class="alert">

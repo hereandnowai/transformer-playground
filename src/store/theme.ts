@@ -6,10 +6,13 @@ const { theme } = resolveConfig(tailwindConfig);
 
 export type ThemeMode = 'light' | 'dark';
 
+/** HERE AND NOW AI brand yellow, for highlights only. */
+export const BRAND_YELLOW = '#FFDB00';
+
 /** Shared with the bootstrap script in `src/app.html`. */
 export const THEME_STORAGE_KEY = 'te-theme';
 
-export const themeMode = writable<ThemeMode>('light');
+export const themeMode = writable<ThemeMode>('dark');
 
 export const isDark = derived(themeMode, ($themeMode) => $themeMode === 'dark');
 
@@ -23,7 +26,18 @@ export type PaletteHue = 'gray' | 'blue' | 'green' | 'indigo' | 'purple' | 'red'
  * those anchors keeps the ramp visible without touching its saturated end.
  */
 const DARK_SHADE_SHIFT: Record<PaletteHue, Record<number, number>> = {
-	gray: { 50: 950, 100: 900, 200: 700, 300: 600, 400: 500, 500: 400, 600: 300, 700: 200, 800: 100, 900: 50 },
+	gray: {
+		50: 950,
+		100: 900,
+		200: 700,
+		300: 600,
+		400: 500,
+		500: 400,
+		600: 300,
+		700: 200,
+		800: 100,
+		900: 50
+	},
 	blue: { 100: 900, 200: 800, 300: 600, 400: 400, 500: 400, 600: 400, 700: 300 },
 	green: { 100: 900, 200: 800, 300: 600, 400: 400, 500: 400, 600: 400, 700: 300 },
 	indigo: { 100: 900, 200: 800, 300: 600, 400: 400, 500: 400, 600: 400, 700: 300 },
@@ -62,7 +76,8 @@ export const themePalette = derived(themeMode, paletteFor);
 
 /** Accent for the token the model predicts, resolved for the active theme. */
 export const predictedColor = derived(themePalette, ($themePalette) =>
-	$themePalette.color('purple', 600)
+	// HERE AND NOW AI: the predicted token is the highlight, so it takes the brand yellow in dark mode.
+	$themePalette.dark ? BRAND_YELLOW : $themePalette.color('purple', 600)
 );
 
 const readStoredMode = (): ThemeMode | null => {
@@ -98,7 +113,7 @@ export const initTheme = () => {
 	if (initialised) return;
 	initialised = true;
 
-	const systemPrefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
-	themeMode.set(readStoredMode() ?? (systemPrefersDark ? 'dark' : 'light'));
+	// HERE AND NOW AI: the dark brand theme is the default; light stays one click away.
+	themeMode.set(readStoredMode() ?? 'dark');
 	themeMode.subscribe(applyTheme);
 };

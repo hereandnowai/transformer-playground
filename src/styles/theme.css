@@ -14,6 +14,11 @@
 :root {
 	color-scheme: light;
 
+	/* HERE AND NOW AI brand */
+	--brand: #ffdb00;
+	--brand-ink: #0a0a0a; /* text on a yellow fill */
+	--heading: #6c2bd9; /* purple-700, as upstream */
+
 	/* Backgrounds */
 	--page: #ffffff;
 	--page-transparent: rgba(255, 255, 255, 0);
@@ -70,38 +75,41 @@
 html.dark {
 	color-scheme: dark;
 
+	/* HERE AND NOW AI dark theme: near-black ground, neutral greys, light text.
+	   Brand yellow (--brand) is kept for highlights only. */
+
 	/* Backgrounds */
-	--page: #030712; /* gray-950 */
-	--page-transparent: rgba(3, 7, 18, 0);
-	--surface: #1f2937; /* gray-800 */
-	--surface-subtle: #111827; /* gray-900 */
-	--surface-muted: #374151; /* gray-700 */
-	--surface-strong: #4b5563; /* gray-600 */
+	--page: #0a0a0a;
+	--page-transparent: rgba(10, 10, 10, 0);
+	--surface: #171717;
+	--surface-subtle: #111111;
+	--surface-muted: #262626;
+	--surface-strong: #333333;
 
 	/* Default document colour */
-	--text: #e5e7eb; /* gray-200 */
+	--text: #e8e8e8;
 
 	/* Borders and rules */
-	--line-subtle: #1f2937; /* gray-800 */
-	--line: #374151; /* gray-700 */
-	--line-strong: #4b5563; /* gray-600 */
-	--line-heavy: #6b7280; /* gray-500 */
-	--line-contrast: #e5e7eb; /* gray-200 */
+	--line-subtle: #1c1c1c;
+	--line: #2e2e2e;
+	--line-strong: #404040;
+	--line-heavy: #666666;
+	--line-contrast: #e8e8e8;
 
 	/* Text, from strongest to faintest */
-	--ink-strong: #f9fafb; /* gray-50 */
-	--ink: #f3f4f6; /* gray-100 */
-	--ink-body: #e5e7eb; /* gray-200 */
-	--ink-secondary: #d1d5db; /* gray-300 */
-	--ink-muted: #9ca3af; /* gray-400 */
-	--ink-faint: #6b7280; /* gray-500 */
-	--ink-ghost: #4b5563; /* gray-600 */
-	--ink-ghost-2: #374151; /* gray-700 */
+	--ink-strong: #fafafa;
+	--ink: #f2f2f2;
+	--ink-body: #e0e0e0;
+	--ink-secondary: #c8c8c8;
+	--ink-muted: #a3a3a3;
+	--ink-faint: #7a7a7a;
+	--ink-ghost: #525252;
+	--ink-ghost-2: #3a3a3a;
 
 	/* Data visualisation */
-	--cell: #111827; /* gray-900 */
-	--track: #374151; /* gray-700 */
-	--track-fill: #4b5563; /* gray-600 */
+	--cell: #121212;
+	--track: #2e2e2e;
+	--track-fill: #404040;
 
 	/* Accents: the pale tints become deep tints, and the saturated text colours
 	   step up to a lighter shade of the same hue. */
@@ -121,6 +129,9 @@ html.dark {
 	--accent-red-700: #f8b4b4; /* red-300 */
 	--accent-green-500: #31c48d; /* green-400 */
 	--accent-green-600: #31c48d; /* green-400 */
+
+	/* Headings stay light; the brand colour marks them instead of filling them. */
+	--heading: #fafafa;
 }
 
 html,
