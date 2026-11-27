@@ -1,33 +1,45 @@
 # Transformer Playground by HERE AND NOW AI
 
-**See how a GPT-2 transformer thinks, live in your browser.** Type a sentence and watch every step the model takes to
-guess the next word: tokens, embeddings, Query/Key/Value, multi-head attention, the output projection W<sub>O</sub>,
-the MLP (multilayer perceptron, the feed-forward network) and the final probabilities. Nothing to install, no account,
-no tracking.
+**See how a GPT-2 transformer picks its next word, live in your browser.** Type a sentence and follow every step:
+tokens, embeddings, position, Query/Key/Value attention, the 12 heads, the MLP, residual connections and layer norm,
+the 12 stacked blocks and the final probabilities. Explained simply, with the model's real numbers. Nothing to install,
+no account, no tracking.
 
 **Try it live: https://hereandnowai.github.io/transformer-playground/**
 
+[![CI](https://github.com/hereandnowai/transformer-playground/actions/workflows/ci.yml/badge.svg)](https://github.com/hereandnowai/transformer-playground/actions/workflows/ci.yml)
 [![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 [![Paper: Attention Is All You Need](https://img.shields.io/badge/arXiv-1706.03762-red)](https://arxiv.org/abs/1706.03762)
 
-Transformer Playground is a fork of [Transformer Explainer](https://github.com/poloclub/transformer-explainer) by the
-Polo Club of Data Science at Georgia Tech, updated for 2026 by [HERE AND NOW AI](https://hereandnowai.com) for our
-lessons on YouTube.
+![Transformer Playground: the live GPT-2 diagram after a prompt has run](docs/screenshots/overview.jpg)
 
-## What is new in this fork
+## Features
 
-- **The 2017 paper, connected.** A textbook card and an article section link the playground to
-  [“Attention Is All You Need”](https://arxiv.org/abs/1706.03762): the original was an encoder-decoder for translation
-  (N = 6, d<sub>model</sub> 512, 8 heads); GPT-2 keeps only the decoder.
-- **The attention output projection W<sub>O</sub> is shown.** Click the **× W<sub>O</sub>** badge to see the 12 head
-  outputs joined and multiplied by W<sub>O</sub> (768 × 768, `c_proj` in the GPT-2 code). (Upstream issue #71.)
-- **MLP spelled out**: multilayer perceptron, the feed-forward network. (Upstream issue #89.)
-- **Dark theme by default** in the HERE AND NOW AI colours; the light theme is one click away (the dark-mode token system
-  comes from a community pull request to the original project, #90).
-- **Privacy:** Google Tag Manager, Google Analytics and every user identifier removed. The page loads no fonts or videos
-  from third parties; it only downloads the model (from this site), the ONNX Runtime WebAssembly files (jsDelivr CDN)
-  and the tokenizer (Hugging Face).
-- **`npm install` works again** (Vite 6 to match `@sveltejs/vite-plugin-svelte` 6; upstream issue #74, as in PR #85).
+- **Story mode.** A guided tour in 9 steps, from tokens to the next word. Each step lights up its part of the live
+  diagram, dims the rest and shows a small visual built from the model's own output (token IDs, attention weights,
+  all 12 heads, the top next words). Back / Next, a clickable progress rail and the arrow keys.
+- **Attention heatmap.** For any block and head: a token-by-token grid of attention weights with exact values on hover
+  (or with the arrow keys), the causal mask marked, and a "which word does each word look at most?" list.
+- **Next-word race.** Animated bars for the most likely next words, before and after top-k / top-p, the word that was
+  picked, and live temperature and sampling controls. "Pick again" draws a new word.
+- **Shareable links.** The prompt, temperature and top-k / top-p live in the address (`?q=…&t=…&k=…`), and
+  **Copy link** puts it on your clipboard.
+- **Keyboard shortcuts.** `/` prompt, `1`–`5` examples, `S` story, `←` `→` steps, `H` heatmap, `N` race, `L` copy
+  link, `T` theme, `Esc` close, `?` help.
+- **Accessible.** Labelled controls, visible focus rings, screen-reader announcements, AA colour contrast, and less
+  motion when your system asks for it.
+- **Light and dark.** Light by default; dark is one click (or `T`) away and remembered on your device.
+- **Phones.** A story-first page with the five ready-made examples, Story mode, the heatmap and the race. The live model
+  (about 630 MB) runs on desktop and laptop browsers.
+- **The full diagram.** Every part of GPT-2 small is drawn and clickable, including the attention output projection
+  W<sub>O</sub>, plus 22 deep-dive notes and a section on the 2017 paper
+  ["Attention Is All You Need"](https://arxiv.org/abs/1706.03762).
+- **Private.** No analytics, no trackers, no third-party fonts. The page downloads only the model (from this site), the
+  ONNX Runtime WebAssembly files (jsDelivr) and the GPT-2 tokenizer (Hugging Face).
+
+| Story mode | Attention heatmap | Next-word race |
+| --- | --- | --- |
+| ![Story mode on the attention step](docs/screenshots/story-mode.jpg) | ![Attention heatmap](docs/screenshots/attention-heatmap.jpg) | ![Next-word race](docs/screenshots/next-word-race.jpg) |
 
 ## Run it on your computer
 
@@ -41,26 +53,35 @@ npm run dev
 ```
 
 Then open http://localhost:5173 in your browser. The first visit downloads the GPT-2 model (about 630 MB, in 63 parts)
-into your browser, so give it a minute. It runs on your CPU through WebAssembly; a desktop or laptop browser works best.
+into your browser's cache, so give it a minute; the examples work while it loads. It runs on your CPU through
+WebAssembly.
 
 Other commands:
 
 ```bash
-npm run build     # static site in ./build (served under /transformer-playground)
-npm run preview   # preview the production build
-npm run deploy    # publish ./build to the gh-pages branch (GitHub Pages)
+npm run build      # static site in ./build (served under /transformer-playground)
+npm run preview    # preview the production build
+npm run check      # type-check (fails on any problem in our code)
+npm run check:all  # the full svelte-check report, including the older upstream code
+npm run deploy     # publish ./build to the gh-pages branch (GitHub Pages)
 ```
+
+Every push and pull request runs install, build and check on GitHub Actions (`.github/workflows/ci.yml`).
 
 ## How it works
 
-- **Model:** GPT-2 (small, 124 million parameters), exported to ONNX and run in the browser with
+- **Model:** GPT-2 small (124 million parameters), exported to ONNX and run in the browser with
   [ONNX Runtime Web](https://onnxruntime.ai/) (`static/model-v2`). The model code follows Andrej Karpathy's
   [nanoGPT](https://github.com/karpathy/nanoGPT) (`src/utils/model`).
 - **Tokenizer:** the GPT-2 tokenizer from [Transformers.js](https://github.com/xenova/transformers.js) (`Xenova/gpt2`).
-- **Interface:** [SvelteKit](https://kit.svelte.dev/) with [D3.js](https://d3js.org/), [GSAP](https://gsap.com/),
-  [KaTeX](https://katex.org/) and Tailwind CSS / Flowbite.
+- **Interface:** [SvelteKit](https://kit.svelte.dev/) and Svelte 5, with [D3.js](https://d3js.org/),
+  [GSAP](https://gsap.com/), [KaTeX](https://katex.org/) and Tailwind CSS / Flowbite. The new tools live in
+  `src/components/playground` (Svelte 5 runes, strict TypeScript) and `src/utils/playground`.
 
 ## Credits
+
+Transformer Playground is a fork of **Transformer Explainer**, rebuilt with a new design and new tools by
+[HERE AND NOW AI](https://hereandnowai.com).
 
 - **Transformer Explainer** by Aeree Cho, Grace C. Kim, Alexander Karpekov, Seongmin Lee, Alec Helbling,
   Benjamin Hoover, Zijie J. Wang, Minsuk Kahng and Duen Horng (Polo) Chau, Polo Club of Data Science, Georgia Tech
