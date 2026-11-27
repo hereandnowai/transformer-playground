@@ -142,11 +142,7 @@
 				onpaste={onPaste}
 			></span>
 			{#if showPrediction}
-				<mark
-					class="prediction"
-					class:spaced={/^\s/.test(predicted)}
-					title="The word GPT-2 picked next">{predicted.trimStart()}</mark
-				>
+				<mark class="prediction" title="The word GPT-2 picked next">{predicted.trimStart()}</mark>
 			{/if}
 			{#if $isModelRunning}
 				<span class="running-dots"><LoadingDots /></span>
@@ -273,9 +269,11 @@
 	:global(html.dark) .prediction {
 		color: var(--brand-ink);
 	}
-	// The word's leading space shows as a gap, outside the highlight.
-	.prediction.spaced {
-		margin-left: 0.3em;
+	// Always a clear gap before the predicted token, outside the yellow chip, even for a
+	// token that continues the last word, so it never reads as one glued word.
+	.prediction {
+		margin-left: 0.35em;
+		padding: 0 0.2em;
 	}
 	.running-dots {
 		flex-shrink: 0;

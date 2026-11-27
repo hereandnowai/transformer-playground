@@ -147,7 +147,7 @@
 		border: 1px solid var(--line);
 	}
 	.picked-word {
-		margin-left: 0.25em;
+		margin-left: 0.35em;
 		padding: 0.05em 0.35em;
 		border-radius: 0.35em;
 		background: var(--brand);
