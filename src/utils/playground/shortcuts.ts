@@ -1,10 +1,9 @@
 import { get } from 'svelte/store';
-import { storyOpen, shortcutsOpen, showToast } from '~/store/ui';
+import { storyOpen, shortcutsOpen } from '~/store/ui';
 import { toggleTheme } from '~/store/theme';
 import { inputTextExample } from '~/store';
 import { selectExample, isBusy } from './actions';
 import { closeTopLayer, stepStory, toggleDrawer, toggleStory } from './panels';
-import { copyText, shareUrl } from './urlState';
 
 export interface Shortcut {
 	keys: string[];
@@ -34,7 +33,7 @@ export const SHORTCUTS: { group: string; items: Shortcut[] }[] = [
 	{
 		group: 'Page',
 		items: [
-			{ keys: ['L'], label: 'Copy a link to this view' },
+			{ keys: ['L'], label: 'Visit hereandnowai.com' },
 			{ keys: ['T'], label: 'Light or dark theme' },
 			{ keys: ['?'], label: 'Show these shortcuts' }
 		]
@@ -97,11 +96,7 @@ export const handleShortcut = (event: KeyboardEvent) => {
 			toggleTheme();
 			break;
 		case 'l':
-			copyText(shareUrl()).then((ok) =>
-				showToast(
-					ok ? 'Link copied: it opens this prompt and these settings.' : 'Could not copy the link.'
-				)
-			);
+			window.open('https://hereandnowai.com', '_blank', 'noopener');
 			break;
 		case 'ArrowRight':
 		case 'ArrowLeft':

@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import { isDark, toggleTheme } from '~/store/theme';
-	import { storyOpen, drawerTab, shortcutsOpen, pendingPrompt, showToast } from '~/store/ui';
+	import { storyOpen, drawerTab, shortcutsOpen, pendingPrompt } from '~/store/ui';
 	import { isFetchingModel } from '~/store';
 	import PromptBar from '~/components/playground/PromptBar.svelte';
 	import ExampleChips from '~/components/playground/ExampleChips.svelte';
 	import SamplingControls from '~/components/playground/SamplingControls.svelte';
 	import IconButton from '~/components/playground/IconButton.svelte';
-	import { copyText, shareUrl } from '~/utils/playground/urlState';
 	import { toggleStory, toggleDrawer } from '~/utils/playground/panels';
 
 	interface Props {
@@ -17,12 +16,8 @@
 
 	let { isActive }: Props = $props();
 
-	const copyLink = async () => {
-		const ok = await copyText(shareUrl());
-		showToast(
-			ok ? 'Link copied: it opens this prompt and these settings.' : 'Could not copy the link.'
-		);
-	};
+	// The link button opens our website (owner's request, 27 Nov 2026).
+	const openWebsite = () => window.open('https://hereandnowai.com', '_blank', 'noopener');
 </script>
 
 <div class="top-bar" class:active={isActive}>
@@ -84,7 +79,7 @@
 			/>
 		</div>
 		<span class="divider" aria-hidden="true"></span>
-		<IconButton icon="link" label="Copy link to this view" shortcut="L" onclick={copyLink} />
+		<IconButton icon="link" label="Visit hereandnowai.com" shortcut="L" onclick={openWebsite} />
 		<IconButton
 			icon="keyboard"
 			label="Keyboard shortcuts"
