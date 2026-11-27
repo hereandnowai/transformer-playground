@@ -2,13 +2,11 @@
 	import '~/styles/app.css';
 	import '~/styles/global.scss';
 	import Topbar from '~/components/Topbar.svelte';
-	import { isLoaded, predictedColor, rootRem, userId } from '~/store';
+	import { isLoaded, predictedColor, rootRem } from '~/store';
 	import Article from '~/components/article/Article.svelte';
 	import { onMount } from 'svelte';
 	import { Spinner } from 'flowbite-svelte';
 	import Alert from '~/components/Alert.svelte';
-	import GTM from '~/utils/gtm.svelte';
-	import { page } from '$app/stores';
 
 	let topBarHeight = 0;
 	let scrollLeft = 0;
@@ -22,17 +20,6 @@
 
 	onMount(() => {
 		isLoaded.set(true);
-
-		const userIdParam = $page.url.searchParams.get('userId');
-
-		if (userIdParam) {
-			userId.set(userIdParam);
-			(window as any).dataLayer?.push({
-				event: 'user_identified',
-				user_id: userIdParam,
-				timestamp: new Date().toISOString()
-			});
-		}
 
 		intersectionObserver = new IntersectionObserver(handleIntersection, {
 			root: null,
@@ -66,7 +53,6 @@
 	};
 </script>
 
-<GTM />
 <div
 	id="app"
 	style={`--min-screen-width:${minScreenWidth}px;--min-column-width:${minColumWidth}px;--predicted-color:${predictedColor};`}

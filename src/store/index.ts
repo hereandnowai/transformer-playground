@@ -117,6 +117,3 @@ export const isMobile = readable(false, (set) => {
 	}
 	return () => {}; // Cleanup function
 });
-
-// User identification
-export const userId = writable<string | null>(null);

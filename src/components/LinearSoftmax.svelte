@@ -12,8 +12,7 @@
 		sampling,
 		isExpandOrCollapseRunning,
 		isTextbookOpen,
-		textbookCurrentPageId,
-		userId
+		textbookCurrentPageId
 	} from '~/store';
 	import { expandedBlock, predictedToken, highlightedIndex, modelData } from '~/store';
 	import ProbabilityBars from './ProbabilityBars.svelte';
@@ -83,9 +82,6 @@
 
 	let drawBars: () => void;
 
-	// google analytics
-	let startTime = null;
-
 	const expandSoftmax = async () => {
 		containerState = Flip.getState('.softmax .softmax-detail.expandable');
 		isSoftmaxExpanded = true;
@@ -109,28 +105,9 @@
 			duration: 0.2,
 			delay: 0.5
 		});
-
-		startTime = performance.now();
-		window.dataLayer?.push({
-			event: 'visibility-show',
-			visible_name: 'prob-expansion',
-			start_time: startTime,
-			user_id: $userId
-		});
 	};
 
 	const collapseSoftmax = async () => {
-		let endTime = performance.now();
-		let visibleDuration = endTime - startTime;
-
-		window.dataLayer?.push({
-			event: 'visibility-hide',
-			visible_name: 'prob-expansion',
-			end_time: endTime,
-			visible_duration: visibleDuration,
-			user_id: $userId
-		});
-
 		showLogitPopover = false;
 
 		containerState = Flip.getState('.softmax .softmax-detail.expandable');

@@ -7,8 +7,7 @@
 		attentionHeadIdx,
 		hoveredMatrixCell,
 		blockIdx,
-		isExpandOrCollapseRunning,
-		userId
+		isExpandOrCollapseRunning
 	} from '~/store';
 	import classNames from 'classnames';
 	import Matrix from '~/components/common/Matrix.svelte';
@@ -99,9 +98,6 @@
 	// animation
 	let expandTl = gsap.timeline();
 	let collapseTl = gsap.timeline();
-
-	// google analytics
-	let startTime = null;
 
 	const expandAttention = () => {
 		highlightAttentionPath();
@@ -234,28 +230,10 @@
 				isExpandOrCollapseRunning.set(false);
 			}
 		});
-
-		startTime = performance.now();
-		window.dataLayer?.push({
-			event: 'visibility-show',
-			visible_name: 'attention-expansion',
-			start_time: startTime,
-			user_id: $userId
-		});
 	};
 
 	const collapseAttention = () => {
 		removeAttentionPathHighlight();
-		let endTime = performance.now();
-		let visibleDuration = endTime - startTime;
-
-		window.dataLayer?.push({
-			event: 'visibility-hide',
-			visible_name: 'attention-expansion',
-			end_time: endTime,
-			visible_duration: visibleDuration,
-			user_id: $userId
-		});
 
 		isAttentionExpanded = false;
 		isExpandOrCollapseRunning.set(true);

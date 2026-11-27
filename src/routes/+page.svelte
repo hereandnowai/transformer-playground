@@ -18,8 +18,7 @@
 		isMobile,
 		isOnBlockTransition,
 		blockIdx,
-		isTextbookOpen,
-		userId
+		isTextbookOpen
 	} from '~/store';
 	import { PreTrainedTokenizer } from '@xenova/transformers';
 	import Sankey from '~/components/Sankey.svelte';
@@ -48,7 +47,6 @@
 	ort.env.logLevel = 'error';
 
 	let active = false;
-	let appStartTime = Date.now();
 
 	// fetch model
 	onMount(async () => {
@@ -88,14 +86,6 @@
 		modelSession.set(session);
 
 		isFetchingModel.set(false);
-
-		const loadTime = Date.now() - appStartTime;
-		window.dataLayer?.push({
-			event: `model-loaded`,
-			use_cache: hasCache,
-			load_time_ms: loadTime,
-			user_id: $userId
-		});
 	};
 
 	// Subscribe inputs
