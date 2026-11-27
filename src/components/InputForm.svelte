@@ -128,9 +128,11 @@
 				type="button"
 				disabled={selectDisabled}
 				class:selectDisabled
-				class="select-button inline-flex shrink-0 items-center justify-center border border-s-0 border-gray-200 bg-white px-3 py-2 text-center text-xs font-medium text-gray-900 first:rounded-s-lg first:border-s last:rounded-e-lg"
+				class="select-button inline-flex shrink-0 items-center justify-center border border-s-0 border-gray-200 bg-white px-3 py-2 text-center text-xs font-medium text-gray-900 first:rounded-s-lg first:border-s last:rounded-e-lg dark:border-gray-700 dark:bg-gray-800 dark:text-gray-50"
 			>
-				Examples<ChevronDownOutline class="pointer-events-none h-4 w-4 text-gray-500" />
+				Examples<ChevronDownOutline
+					class="pointer-events-none h-4 w-4 text-gray-500 dark:text-gray-400"
+				/>
 			</button>
 			<Dropdown bind:open={dropdownOpen} class="example-dropdown">
 				{#each inputTextExample as text, index}
@@ -257,8 +259,8 @@
 		flex: 1 0 0;
 		align-items: center;
 
-		border: 1px solid theme('colors.gray.300');
-		color: theme('colors.gray.900');
+		border: 1px solid var(--line-strong);
+		color: var(--ink-strong);
 		border-left: none;
 		border-start-end-radius: 0.5rem;
 		border-end-end-radius: 0.5rem;
@@ -311,10 +313,10 @@
 	.select-button {
 		flex-shrink: 0;
 		font-size: 0.9rem;
-		border: 1px solid theme('colors.gray.300');
-		color: theme('colors.gray.900');
+		border: 1px solid var(--line-strong);
+		color: var(--ink-strong);
 		&:hover {
-			background-color: theme('colors.gray.100');
+			background-color: var(--surface-muted);
 		}
 		&:focus {
 			outline: none;
@@ -325,7 +327,7 @@
 	}
 	:global(.example-dropdown) {
 		:global(.active) {
-			background-color: theme('colors.gray.100') !important;
+			background-color: var(--surface-muted) !important;
 		}
 	}
 	.helper-text {
@@ -334,13 +336,13 @@
 		right: 0;
 		padding: 0.3rem 0;
 		transform: translate(0, 100%);
-		color: theme('colors.gray.400');
+		color: var(--ink-faint);
 		font-size: 0.9rem;
 	}
 	:global(.generate-button) {
 		padding: 0.4rem 0.8rem;
-		border: 1px solid theme('colors.gray.300');
-		color: theme('colors.gray.900');
+		border: 1px solid var(--line-strong);
+		color: var(--ink-strong);
 		transition: all 0.2s;
 		flex-shrink: 0;
 	}
@@ -352,8 +354,8 @@
 	}
 	:global(.generate-button.disabled) {
 		opacity: 1;
-		background-color: theme('colors.gray.100');
-		color: theme('colors.gray.400');
+		background-color: var(--surface-muted);
+		color: var(--ink-faint);
 		cursor: not-allowed;
 	}
 

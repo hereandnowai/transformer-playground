@@ -20,7 +20,7 @@
 	}
 </script>
 
-<div class={`slider-input shrink-0 text-gray-900 ${className}`}>
+<div class={`slider-input shrink-0 text-gray-900 dark:text-gray-50 ${className}`}>
 	<div class="slider-head flex w-full shrink-0 items-center justify-center">
 		<slot></slot>
 	</div>
@@ -67,7 +67,7 @@
 			font-size: 0.9rem;
 			line-height: 0;
 			font-family: monospace;
-			color: theme('colors.gray.800');
+			color: var(--ink);
 			margin-left: 0.5rem;
 		}
 	}
@@ -78,7 +78,7 @@
 		border-radius: 0.25rem;
 		width: 100%;
 		height: 4px;
-		background: theme('colors.gray.300');
+		background: var(--track-fill);
 		outline: none;
 		opacity: 0.7;
 	}
@@ -90,14 +90,14 @@
 		width: 12px;
 		height: 12px;
 		border-radius: 50%;
-		border: 1px solid theme('colors.gray.400');
+		border: 1px solid var(--line-heavy);
 		background: white;
 		cursor: pointer;
 	}
 
 	/* Disabled state for WebKit-based browsers */
 	.slider:disabled::-webkit-slider-thumb {
-		background: theme('colors.gray.200');
+		background: var(--surface-strong);
 		cursor: not-allowed;
 	}
 
@@ -106,14 +106,14 @@
 		width: 12px;
 		height: 12px;
 		border-radius: 50%;
-		border: 1px solid theme('colors.gray.400');
+		border: 1px solid var(--line-heavy);
 		background: white;
 		cursor: pointer;
 	}
 
 	/* Disabled state for Firefox */
 	.slider:disabled::-moz-range-thumb {
-		background: theme('colors.gray.200');
+		background: var(--surface-strong);
 		cursor: not-allowed;
 	}
 
@@ -121,12 +121,12 @@
 	.slider::-moz-range-track {
 		width: 100%;
 		height: 4px;
-		background: theme('colors.gray.300');
+		background: var(--track-fill);
 		border-radius: 0.25rem;
 	}
 
 	/* Firefox progress part */
 	.slider::-moz-range-progress {
-		background: theme('colors.gray.300'); /* 채워진 부분의 색상 */
+		background: var(--track-fill); /* 채워진 부분의 색상 */
 	}
 </style>

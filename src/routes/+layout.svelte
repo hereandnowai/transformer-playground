@@ -1,8 +1,10 @@
 <script lang="ts">
 	import '~/styles/app.css';
+	import '~/styles/theme.css';
 	import '~/styles/global.scss';
 	import Topbar from '~/components/Topbar.svelte';
-	import { isLoaded, predictedColor, rootRem } from '~/store';
+	import { isLoaded, rootRem } from '~/store';
+	import { initTheme, predictedColor } from '~/store/theme';
 	import Article from '~/components/article/Article.svelte';
 	import { onMount } from 'svelte';
 	import { Spinner } from 'flowbite-svelte';
@@ -19,6 +21,7 @@
 	let target: HTMLElement;
 
 	onMount(() => {
+		initTheme();
 		isLoaded.set(true);
 
 		intersectionObserver = new IntersectionObserver(handleIntersection, {
@@ -55,7 +58,7 @@
 
 <div
 	id="app"
-	style={`--min-screen-width:${minScreenWidth}px;--min-column-width:${minColumWidth}px;--predicted-color:${predictedColor};`}
+	style={`--min-screen-width:${minScreenWidth}px;--min-column-width:${minColumWidth}px;--predicted-color:${$predictedColor};`}
 >
 	<div id="landing">
 		<header bind:offsetHeight={topBarHeight} style="transform: translateX({-1 * scrollLeft}px);">
