@@ -22,10 +22,10 @@ no account, no tracking.
   (or with the arrow keys), the causal mask marked, and a "which word does each word look at most?" list.
 - **Next-word race.** Animated bars for the most likely next words, before and after top-k / top-p, the word that was
   picked, and live temperature and sampling controls. "Pick again" draws a new word.
-- **Shareable links.** The prompt, temperature and top-k / top-p live in the address (`?q=…&t=…&k=…`), and
-  **Copy link** puts it on your clipboard.
-- **Keyboard shortcuts.** `/` prompt, `1`–`5` examples, `S` story, `←` `→` steps, `H` heatmap, `N` race, `L` copy
-  link, `T` theme, `Esc` close, `?` help.
+- **Shareable links.** The prompt, temperature and top-k / top-p live in the address (`?q=…&t=…&k=…`), so you
+  can share exactly what you see by copying the address bar. The link button in the top bar opens hereandnowai.com.
+- **Keyboard shortcuts.** `/` prompt, `1`–`5` examples, `S` story, `←` `→` steps, `H` heatmap, `N` race, `L` visit
+  hereandnowai.com, `T` theme, `Esc` close, `?` help.
 - **Accessible.** Labelled controls, visible focus rings, screen-reader announcements, AA colour contrast, and less
   motion when your system asks for it.
 - **Light and dark.** Light by default; dark is one click (or `T`) away and remembered on your device.
