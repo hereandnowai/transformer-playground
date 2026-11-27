@@ -94,6 +94,13 @@ export const textPages: TextbookPage[] = [
 		}
 	},
 	{
+		id: 'paper-2017',
+		title: 'The 2017 Paper: Attention Is All You Need',
+		content: `<p>The Transformer comes from the 2017 paper <a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener">“Attention Is All You Need”</a>. The original model was an <strong>encoder-decoder</strong> built for translation: the <strong>encoder</strong> reads the whole sentence, and the <strong>decoder</strong> writes the translation one token at a time.</p><p>It had <strong>6</strong> encoder and <strong>6</strong> decoder layers, vectors of <strong>512</strong> numbers and <strong>8</strong> attention heads. <strong>GPT-2 keeps only the decoder</strong> and uses it to continue text. GPT-2 (small) stacks <strong>12</strong> blocks, with <strong>768</strong> numbers and <strong>12</strong> heads.</p>`,
+		on: () => {},
+		out: () => {}
+	},
+	{
 		id: 'embedding',
 		title: 'Embedding',
 		content: `<p>Before a Transformer can use text, it first breaks it into small units and represents each as a list of numbers (vector). This process is called <strong>embedding</strong>, and the term can refer to both the process and the resulting vector.</p><p>In this tool, each vector appears as a rectangle, and hovering over it shows its size.</p>`,

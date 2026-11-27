@@ -96,6 +96,50 @@
 		</ol>
 	</div>
 
+	<div class="article-section" id="paper-2017" data-click="article-paper-2017">
+		<h2>From the 2017 Paper to GPT-2</h2>
+		<p>
+			The Transformer was introduced in the 2017 paper
+			<a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener"
+				>“Attention Is All You Need”</a
+			>
+			by eight researchers, most of them at Google. The original model was built for
+			<strong>translation</strong> (for example, English to German) and had two halves: an
+			<strong>encoder</strong> that reads the whole input sentence, and a <strong>decoder</strong>
+			that writes the translation one token at a time, looking back at the encoder's output through cross-attention.
+		</p>
+		<p>
+			GPT-2 (2019) keeps <strong>only the decoder</strong>. There is no second sentence to read, so
+			there is no cross-attention: each block has masked self-attention and an MLP, and the model
+			simply predicts the next token of the text it is given. The core ideas you see in this
+			playground come straight from the paper: scaled dot-product attention, multiple heads, the
+			output projection W<sub>O</sub>, residual connections and layer normalization.
+		</p>
+		<table class="paper-table">
+			<thead>
+				<tr><th></th><th>2017 Transformer (base)</th><th>GPT-2 (small)</th></tr>
+			</thead>
+			<tbody>
+				<tr><td>Job</td><td>Translation</td><td>Continue text (next-token prediction)</td></tr>
+				<tr><td>Parts</td><td>Encoder + decoder</td><td>Decoder only</td></tr>
+				<tr><td>Layers</td><td>N = 6 encoder + 6 decoder</td><td>12 blocks</td></tr>
+				<tr><td>Vector size (d<sub>model</sub>)</td><td>512</td><td>768</td></tr>
+				<tr><td>Attention heads</td><td>8 (64 numbers each)</td><td>12 (64 numbers each)</td></tr>
+				<tr><td>MLP hidden size</td><td>2,048</td><td>3,072</td></tr>
+				<tr
+					><td>Word positions</td><td>Fixed sine and cosine waves</td><td
+						>Learned position embeddings</td
+					></tr
+				>
+				<tr
+					><td>Layer normalization</td><td>After each part</td><td
+						>Before each part (and once at the end)</td
+					></tr
+				>
+			</tbody>
+		</table>
+	</div>
+
 	<div class="article-section" id="embedding" data-click="article-embedding">
 		<h2>Embedding</h2>
 		<p>
@@ -672,6 +716,31 @@
 	:global(html.dark) #description h2 {
 		border-left: 4px solid var(--brand);
 		padding-left: 0.75rem;
+	}
+	.paper-table {
+		width: 100%;
+		margin-top: 1rem;
+		border-collapse: collapse;
+		font-size: 0.95rem;
+		th,
+		td {
+			text-align: left;
+			padding: 0.4rem 0.6rem;
+			border-bottom: 1px solid var(--line);
+			vertical-align: top;
+		}
+		th {
+			font-weight: 600;
+			color: var(--ink-strong);
+			border-bottom: 2px solid var(--line-strong);
+		}
+		td:first-child {
+			color: var(--ink-muted);
+			white-space: nowrap;
+		}
+	}
+	:global(html.dark) .paper-table th {
+		border-bottom-color: var(--brand);
 	}
 	.bold-purple {
 		color: var(--accent-purple-700);
