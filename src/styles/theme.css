@@ -6,51 +6,73 @@
  * instead. Utility classes in the markup use Tailwind's `dark:` variant directly.
  * Both paths resolve to the same Tailwind ramp, so the two mechanisms agree.
  *
- * Every light value is the exact colour the component used before, so turning the
- * tokens on is a no-op in light mode. Accent tokens are named after the shade they
+ * Accent tokens are named after the shade they
  * hold in light mode (`--accent-blue-600` is Tailwind's blue-600); in dark mode
  * they drop to a shade of the same hue that stays legible on the dark background.
  */
+/* Light is the default theme: near-white surfaces, deep teal headings and the
+   HERE AND NOW AI yellow as an accent fill (always with dark text on it). */
 :root {
 	color-scheme: light;
 
 	/* HERE AND NOW AI brand */
 	--brand: #ffdb00;
 	--brand-ink: #0a0a0a; /* text on a yellow fill */
-	--heading: #6c2bd9; /* purple-700, as upstream */
+	--brand-soft: #fff6c2; /* a pale yellow wash behind highlighted text */
+	--brand-strong: #a16207; /* yellow-700: the accent when it has to be text or a line on white */
+	--teal: #004040;
+	--teal-soft: #e3f0ef;
+	--heading: #004040;
+	--link: #004040;
+	--focus-ring: #004040;
 
 	/* Backgrounds */
-	--page: #ffffff;
-	--page-transparent: rgba(255, 255, 255, 0);
+	--page: #f8f8f6;
+	--page-transparent: rgba(248, 248, 246, 0);
 	--surface: #ffffff;
-	--surface-subtle: #f9fafb; /* gray-50 */
-	--surface-muted: #f3f4f6; /* gray-100 */
-	--surface-strong: #e5e7eb; /* gray-200 */
+	--surface-subtle: #f3f4f2;
+	--surface-muted: #eceeec;
+	--surface-strong: #dfe3e1;
+	--surface-glass: rgba(255, 255, 255, 0.82);
 
 	/* Default document colour */
-	--text: #000000;
+	--text: #0b1f1f;
 
 	/* Borders and rules */
-	--line-subtle: #f3f4f6; /* gray-100 */
-	--line: #e5e7eb; /* gray-200 */
-	--line-strong: #d1d5db; /* gray-300 */
-	--line-heavy: #9ca3af; /* gray-400 */
-	--line-contrast: #000000;
+	--line-subtle: #eef0ee;
+	--line: #e1e5e3;
+	--line-strong: #cbd2cf;
+	--line-heavy: #8f9a97;
+	--line-contrast: #0b1f1f;
 
-	/* Text, from strongest to faintest */
-	--ink-strong: #111827; /* gray-900 */
-	--ink: #1f2937; /* gray-800 */
-	--ink-body: #374151; /* gray-700 */
-	--ink-secondary: #4b5563; /* gray-600 */
-	--ink-muted: #6b7280; /* gray-500 */
-	--ink-faint: #9ca3af; /* gray-400 */
-	--ink-ghost: #d1d5db; /* gray-300 */
-	--ink-ghost-2: #e5e7eb; /* gray-200 */
+	/* Text, from strongest to faintest (faint and above pass WCAG AA on --page) */
+	--ink-strong: #0b1f1f;
+	--ink: #132828;
+	--ink-body: #273838;
+	--ink-secondary: #3c4c4c;
+	--ink-muted: #4f5e5e;
+	--ink-faint: #637171;
+	--ink-ghost: #b9c2bf;
+	--ink-ghost-2: #dfe3e1;
 
 	/* Data visualisation */
 	--cell: #ffffff; /* rest state of a data cell */
-	--track: #e5e7eb; /* gray-200 */
-	--track-fill: #d1d5db; /* gray-300 */
+	--track: #e1e5e3;
+	--track-fill: #cbd2cf;
+
+	/* Elevation, radii and motion */
+	--shadow-sm: 0 1px 2px rgba(11, 31, 31, 0.06), 0 1px 3px rgba(11, 31, 31, 0.08);
+	--shadow-md: 0 6px 16px rgba(11, 31, 31, 0.08), 0 2px 4px rgba(11, 31, 31, 0.06);
+	--shadow-lg: 0 24px 56px rgba(11, 31, 31, 0.16), 0 6px 16px rgba(11, 31, 31, 0.08);
+	--radius-sm: 0.5rem;
+	--radius: 0.875rem;
+	--radius-lg: 1.25rem;
+	--ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+	/* Attention colours (one per idea, as in the diagram) */
+	--q-color: #1c64f2;
+	--k-color: #e02424;
+	--v-color: #057a55;
 
 	/* Accents. `flowbite/plugin` replaces the accent scales in the Tailwind
 	   config, so these are the flowbite values, not Tailwind's defaults. */
@@ -132,6 +154,19 @@ html.dark {
 
 	/* Headings stay light; the brand colour marks them instead of filling them. */
 	--heading: #fafafa;
+	--link: #ffdb00;
+	--focus-ring: #ffdb00;
+	--brand-soft: rgba(255, 219, 0, 0.16);
+	--brand-strong: #ffdb00;
+	--teal: #7fd1cc;
+	--teal-soft: #0f2a2a;
+	--surface-glass: rgba(16, 16, 16, 0.82);
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+	--shadow-md: 0 6px 16px rgba(0, 0, 0, 0.45), 0 2px 4px rgba(0, 0, 0, 0.4);
+	--shadow-lg: 0 24px 56px rgba(0, 0, 0, 0.6), 0 6px 16px rgba(0, 0, 0, 0.45);
+	--q-color: #76a9fa;
+	--k-color: #f98080;
+	--v-color: #31c48d;
 }
 
 html,
@@ -141,4 +176,72 @@ body {
 
 body {
 	color: var(--text);
+	font-family:
+		ui-sans-serif,
+		system-ui,
+		-apple-system,
+		'Segoe UI',
+		Roboto,
+		'Helvetica Neue',
+		Arial,
+		sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeLegibility;
+}
+
+/* Keyboard users always see where they are. */
+:focus-visible {
+	outline: 3px solid var(--focus-ring);
+	outline-offset: 2px;
+	border-radius: 4px;
+}
+
+/* Text for screen readers only. */
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
+/* Story mode spotlight: everything the current step is not about fades back. */
+#app[data-spot] .main-section .step,
+#app[data-spot] .main-section g.path-group {
+	opacity: 0.18 !important;
+	transition: opacity 0.45s ease !important;
+}
+#app[data-spot~='embedding'] .main-section .step.embedding,
+#app[data-spot~='embedding'] .main-section g.path-group.embedding,
+#app[data-spot~='qkv'] .main-section .step.qkv,
+#app[data-spot~='qkv'] .main-section g.path-group.qkv,
+#app[data-spot~='attention'] .main-section .step.attention,
+#app[data-spot~='attention'] .main-section g.path-group.attention,
+#app[data-spot~='mlp'] .main-section .step.mlp,
+#app[data-spot~='mlp'] .main-section g.path-group.mlp,
+#app[data-spot~='mlpUp'] .main-section .step.mlpUp,
+#app[data-spot~='mlpUp'] .main-section g.path-group.mlpUp,
+#app[data-spot~='mlpDown'] .main-section .step.mlpDown,
+#app[data-spot~='mlpDown'] .main-section g.path-group.mlpDown,
+#app[data-spot~='transformer-blocks'] .main-section .step.transformer-blocks,
+#app[data-spot~='transformer-blocks'] .main-section g.path-group.transformer-blocks,
+#app[data-spot~='softmax'] .main-section .step.softmax,
+#app[data-spot~='softmax'] .main-section g.path-group.softmax {
+	opacity: 1 !important;
 }

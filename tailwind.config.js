@@ -17,7 +17,22 @@ export default {
 				xs: ''
 			},
 			fontSize: {},
+			fontFamily: {
+				// System fonts only: no web-font download, no third-party font CDN.
+				sans: [
+					'ui-sans-serif',
+					'system-ui',
+					'-apple-system',
+					'"Segoe UI"',
+					'Roboto',
+					'"Helvetica Neue"',
+					'Arial',
+					'sans-serif'
+				],
+				mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace']
+			},
 			colors: {
+				brand: { DEFAULT: '#FFDB00', ink: '#0A0A0A' },
 				cyan: {
 					50: '#ecfeff',
 					100: '#cffafe',

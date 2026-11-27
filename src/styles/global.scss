@@ -9,7 +9,8 @@ button {
 	}
 }
 
-*:focus {
+/* Mouse clicks get no outline; keyboard focus gets the ring from theme.css. */
+*:focus:not(:focus-visible) {
 	outline: none;
 }
 :root {

@@ -9,10 +9,13 @@ export type ThemeMode = 'light' | 'dark';
 /** HERE AND NOW AI brand yellow, for highlights only. */
 export const BRAND_YELLOW = '#FFDB00';
 
+/** The brand yellow darkened to pass WCAG AA as text or a thin line on white (Tailwind yellow-700). */
+export const BRAND_YELLOW_STRONG = '#A16207';
+
 /** Shared with the bootstrap script in `src/app.html`. */
 export const THEME_STORAGE_KEY = 'te-theme';
 
-export const themeMode = writable<ThemeMode>('dark');
+export const themeMode = writable<ThemeMode>('light');
 
 export const isDark = derived(themeMode, ($themeMode) => $themeMode === 'dark');
 
@@ -76,8 +79,9 @@ export const themePalette = derived(themeMode, paletteFor);
 
 /** Accent for the token the model predicts, resolved for the active theme. */
 export const predictedColor = derived(themePalette, ($themePalette) =>
-	// HERE AND NOW AI: the predicted token is the highlight, so it takes the brand yellow in dark mode.
-	$themePalette.dark ? BRAND_YELLOW : $themePalette.color('purple', 600)
+	// The predicted token is the highlight, so it takes the brand yellow. On a light page yellow
+	// text is unreadable, so it becomes the deep yellow-700 there.
+	$themePalette.dark ? BRAND_YELLOW : BRAND_YELLOW_STRONG
 );
 
 const readStoredMode = (): ThemeMode | null => {
@@ -113,7 +117,7 @@ export const initTheme = () => {
 	if (initialised) return;
 	initialised = true;
 
-	// HERE AND NOW AI: the dark brand theme is the default; light stays one click away.
-	themeMode.set(readStoredMode() ?? 'dark');
+	// Light is the default; dark stays one click away and is remembered per visitor.
+	themeMode.set(readStoredMode() ?? 'light');
 	themeMode.subscribe(applyTheme);
 };
