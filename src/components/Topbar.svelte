@@ -1,200 +1,261 @@
-<script>
-	import { onMount } from 'svelte';
-	import { fade } from 'svelte/transition';
-	import { page } from '$app/stores';
+<script lang="ts">
 	import { base } from '$app/paths';
-	import InputForm from '~/components/InputForm.svelte';
-	import Sampling from '~/components/Sampling.svelte';
-	import { MoonOutline, SunOutline } from 'flowbite-svelte-icons';
 	import { isDark, toggleTheme } from '~/store/theme';
+	import { storyOpen, drawerTab, shortcutsOpen, pendingPrompt, showToast } from '~/store/ui';
+	import { isFetchingModel } from '~/store';
+	import PromptBar from '~/components/playground/PromptBar.svelte';
+	import ExampleChips from '~/components/playground/ExampleChips.svelte';
+	import SamplingControls from '~/components/playground/SamplingControls.svelte';
+	import IconButton from '~/components/playground/IconButton.svelte';
+	import { copyText, shareUrl } from '~/utils/playground/urlState';
+	import { toggleStory, toggleDrawer } from '~/utils/playground/panels';
 
-	export let isActive;
+	interface Props {
+		/** False once the visitor has scrolled down to the article. */
+		isActive: boolean;
+	}
 
-	// Check if current page is about page
-	$: isAboutPage = $page.url.pathname === '/about';
+	let { isActive }: Props = $props();
+
+	const copyLink = async () => {
+		const ok = await copyText(shareUrl());
+		showToast(
+			ok ? 'Link copied: it opens this prompt and these settings.' : 'Could not copy the link.'
+		);
+	};
 </script>
 
-<div class="top-bar flex w-full items-center gap-4 px-10 py-2 pb-3" class:active={isActive}>
+<div class="top-bar" class:active={isActive}>
 	<a
-		class="brand flex items-center gap-3"
+		class="brand"
 		href="https://hereandnowai.com"
 		target="_blank"
 		rel="noopener"
 		title="HERE AND NOW AI: AI is Good"
 	>
-		<img class="mark" src={`${base}/hereandnowai-mark.png`} alt="HERE AND NOW AI logo" />
-		<span class="names flex flex-col">
+		<img
+			class="mark"
+			src={`${base}/hereandnowai-mark.png`}
+			alt="HERE AND NOW AI logo"
+			width="44"
+			height="44"
+		/>
+		<span class="names">
 			<span class="logo">Transformer Playground</span>
 			<span class="by">by <strong>HERE AND NOW AI</strong></span>
 		</span>
 	</a>
-	<div class="inputs flex grow items-center">
-		<div class="input-wrapper w-full" class:active={isActive}>
-			{#if !isAboutPage}
-				<InputForm />
-			{/if}
-		</div>
+
+	<div class="prompt-slot">
+		<PromptBar />
 	</div>
-	<div class="icons flex items-center gap-3">
-		<!-- the 2017 paper -->
-		<a
-			href="https://arxiv.org/abs/1706.03762"
-			target="_blank"
-			rel="noopener"
-			title="Read the 2017 paper: Attention Is All You Need"
-			aria-label="Read the 2017 paper: Attention Is All You Need"
-		>
-			<svg
-				class="h-6 w-6"
-				aria-hidden="true"
-				xmlns="http://www.w3.org/2000/svg"
-				width="24"
-				height="24"
-				fill="currentColor"
-				viewBox="0 0 24 24"
-			>
-				<path
-					fill-rule="evenodd"
-					d="M9 2.221V7H4.221a2 2 0 0 1 .365-.5L8.5 2.586A2 2 0 0 1 9 2.22ZM11 2v5a2 2 0 0 1-2 2H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2 2 2 0 0 0 2 2h12a2 2 0 0 0 2-2 2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2V4a2 2 0 0 0-2-2h-7Zm-6 9a1 1 0 0 0-1 1v5a1 1 0 1 0 2 0v-1h.5a2.5 2.5 0 0 0 0-5H5Zm1.5 3H6v-1h.5a.5.5 0 0 1 0 1Zm4.5-3a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h1.376A2.626 2.626 0 0 0 15 15.375v-1.75A2.626 2.626 0 0 0 12.375 11H11Zm1 5v-3h.375a.626.626 0 0 1 .625.626v1.748a.625.625 0 0 1-.626.626H12Zm5-5a1 1 0 0 0-1 1v5a1 1 0 1 0 2 0v-1h1a1 1 0 1 0 0-2h-1v-1h1a1 1 0 1 0 0-2h-2Z"
-					clip-rule="evenodd"
-				/>
-			</svg>
-		</a>
-		<!-- video -->
-		<a
+
+	<nav class="actions" aria-label="Tools">
+		<div class="tools">
+			<IconButton
+				icon="story"
+				label="Story mode"
+				text="Story"
+				showLabel
+				shortcut="S"
+				pressed={$storyOpen}
+				controls="story-panel"
+				onclick={toggleStory}
+			/>
+			<IconButton
+				icon="grid"
+				label="Attention heatmap"
+				text="Heatmap"
+				showLabel
+				shortcut="H"
+				pressed={$drawerTab === 'heatmap'}
+				controls="insights-drawer"
+				onclick={() => toggleDrawer('heatmap')}
+			/>
+			<IconButton
+				icon="bars"
+				label="Next-word race"
+				text="Next word"
+				showLabel
+				shortcut="N"
+				pressed={$drawerTab === 'race'}
+				controls="insights-drawer"
+				onclick={() => toggleDrawer('race')}
+			/>
+		</div>
+		<span class="divider" aria-hidden="true"></span>
+		<IconButton icon="link" label="Copy link to this view" shortcut="L" onclick={copyLink} />
+		<IconButton
+			icon="keyboard"
+			label="Keyboard shortcuts"
+			shortcut="?"
+			onclick={() => shortcutsOpen.set(true)}
+		/>
+		<IconButton
+			icon={$isDark ? 'sun' : 'moon'}
+			label={$isDark ? 'Switch to light theme' : 'Switch to dark theme'}
+			shortcut="T"
+			onclick={toggleTheme}
+		/>
+		<IconButton
+			icon="youtube"
+			label="HERE AND NOW AI on YouTube"
 			href="https://www.youtube.com/@hereandnow_ai"
-			target="_blank"
-			rel="noopener"
-			title="HERE AND NOW AI on YouTube"
-			aria-label="HERE AND NOW AI on YouTube"
-		>
-			<svg
-				class="h-6 w-6"
-				aria-hidden="true"
-				xmlns="http://www.w3.org/2000/svg"
-				width="24"
-				height="24"
-				fill="currentColor"
-				viewBox="0 0 24 24"
-			>
-				<path
-					fill-rule="evenodd"
-					d="M21.7 8.037a4.26 4.26 0 0 0-.789-1.964 2.84 2.84 0 0 0-1.984-.839c-2.767-.2-6.926-.2-6.926-.2s-4.157 0-6.928.2a2.836 2.836 0 0 0-1.983.839 4.225 4.225 0 0 0-.79 1.965 30.146 30.146 0 0 0-.2 3.206v1.5a30.12 30.12 0 0 0 .2 3.206c.094.712.364 1.39.784 1.972.604.536 1.38.837 2.187.848 1.583.151 6.731.2 6.731.2s4.161 0 6.928-.2a2.844 2.844 0 0 0 1.985-.84 4.27 4.27 0 0 0 .787-1.965 30.12 30.12 0 0 0 .2-3.206v-1.516a30.672 30.672 0 0 0-.202-3.206Zm-11.692 6.554v-5.62l5.4 2.819-5.4 2.801Z"
-					clip-rule="evenodd"
-				/>
-			</svg>
-		</a>
-		<!-- repo -->
-		<a
+		/>
+		<IconButton
+			icon="github"
+			label="Source code on GitHub"
 			href="https://github.com/hereandnowai/transformer-playground"
-			target="_blank"
-			rel="noopener"
-			title="Source code on GitHub"
-			aria-label="Source code on GitHub"
-		>
-			<svg
-				class="h-6 w-6"
-				aria-hidden="true"
-				xmlns="http://www.w3.org/2000/svg"
-				width="24"
-				height="24"
-				fill="currentColor"
-				viewBox="0 0 24 24"
-			>
-				<path
-					fill-rule="evenodd"
-					d="M12.006 2a9.847 9.847 0 0 0-6.484 2.44 10.32 10.32 0 0 0-3.393 6.17 10.48 10.48 0 0 0 1.317 6.955 10.045 10.045 0 0 0 5.4 4.418c.504.095.683-.223.683-.494 0-.245-.01-1.052-.014-1.908-2.78.62-3.366-1.21-3.366-1.21a2.711 2.711 0 0 0-1.11-1.5c-.907-.637.07-.621.07-.621.317.044.62.163.885.346.266.183.487.426.647.71.135.253.318.476.538.655a2.079 2.079 0 0 0 2.37.196c.045-.52.27-1.006.635-1.37-2.219-.259-4.554-1.138-4.554-5.07a4.022 4.022 0 0 1 1.031-2.75 3.77 3.77 0 0 1 .096-2.713s.839-.275 2.749 1.05a9.26 9.26 0 0 1 5.004 0c1.906-1.325 2.74-1.05 2.74-1.05.37.858.406 1.828.101 2.713a4.017 4.017 0 0 1 1.029 2.75c0 3.939-2.339 4.805-4.564 5.058a2.471 2.471 0 0 1 .679 1.897c0 1.372-.012 2.477-.012 2.814 0 .272.18.592.687.492a10.05 10.05 0 0 0 5.388-4.421 10.473 10.473 0 0 0 1.313-6.948 10.32 10.32 0 0 0-3.39-6.165A9.847 9.847 0 0 0 12.007 2Z"
-					clip-rule="evenodd"
-				/>
-			</svg>
-		</a>
-		<button
-			type="button"
-			class="theme-toggle"
-			aria-label={$isDark ? 'Switch to light theme' : 'Switch to dark theme'}
-			title={$isDark ? 'Switch to light theme' : 'Switch to dark theme'}
-			on:click={toggleTheme}
-		>
-			{#if $isDark}
-				<SunOutline class="h-5 w-5" />
-			{:else}
-				<MoonOutline class="h-5 w-5" />
-			{/if}
-		</button>
+		/>
+	</nav>
+
+	<div class="row-two">
+		<div class="examples">
+			<span class="examples-label">
+				{#if $pendingPrompt && $isFetchingModel}
+					Your shared prompt runs once GPT-2 has loaded. Meanwhile:
+				{:else}
+					Examples
+				{/if}
+			</span>
+			<ExampleChips />
+		</div>
+		<SamplingControls idPrefix="top" />
 	</div>
 </div>
 
 <style lang="scss">
 	.top-bar {
-		background: linear-gradient(to bottom, var(--page) 60%, var(--page-transparent) 100%);
-		.input-wrapper {
-			&.active {
-				opacity: 1;
-				pointer-events: initial;
-			}
-			opacity: 0;
-			transition: opacity 0.2s;
-			pointer-events: none;
-		}
-		.brand {
-			flex-shrink: 0;
-			white-space: nowrap;
-			text-decoration: none;
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr) auto;
+		grid-template-rows: auto auto;
+		column-gap: 1.5rem;
+		row-gap: 0.6rem;
+		align-items: center;
+		padding: 0.7rem 2rem 0.75rem;
+		background: var(--surface-glass);
+		backdrop-filter: saturate(1.6) blur(14px);
+		-webkit-backdrop-filter: saturate(1.6) blur(14px);
+		border-bottom: 1px solid var(--line);
+		box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) inset;
 
-			.mark {
-				width: 2.6rem;
-				height: 2.6rem;
-				border-radius: 0.4rem;
+		.prompt-slot,
+		.row-two {
+			transition:
+				opacity 0.25s var(--ease-out),
+				transform 0.25s var(--ease-out);
+		}
+		&:not(.active) {
+			.row-two {
+				display: none;
 			}
-			.logo {
-				font-size: 1.45rem;
+			.prompt-slot {
+				opacity: 0;
+				pointer-events: none;
+			}
+		}
+	}
+
+	.brand {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		flex-shrink: 0;
+		white-space: nowrap;
+		text-decoration: none;
+
+		.mark {
+			width: 2.75rem;
+			height: 2.75rem;
+			border-radius: 0.7rem;
+			box-shadow: var(--shadow-sm);
+			transition: transform 0.3s var(--ease-out);
+		}
+		&:hover .mark {
+			transform: rotate(-6deg) scale(1.04);
+		}
+		.names {
+			display: flex;
+			flex-direction: column;
+		}
+		.logo {
+			font-size: 1.35rem;
+			font-weight: 800;
+			line-height: 1.1;
+			letter-spacing: -0.025em;
+			color: var(--heading);
+		}
+		.by {
+			font-size: 0.78rem;
+			line-height: 1.3;
+			color: var(--ink-muted);
+			strong {
 				font-weight: 700;
-				line-height: 1.1;
-				letter-spacing: -0.01em;
-				color: var(--ink-strong);
-			}
-			.by {
-				font-size: 0.8rem;
-				line-height: 1.2;
-				color: var(--ink-muted);
-				strong {
-					font-weight: 600;
-					color: var(--ink-secondary);
-				}
-			}
-			&:hover .by strong {
-				color: var(--accent-purple-600);
-			}
-		}
-		:global(html.dark) & .brand:hover .by strong {
-			color: var(--brand);
-		}
-		.icons {
-			flex-shrink: 0;
-			svg {
-				fill: var(--ink-secondary);
-			}
-			.theme-toggle {
-				display: inline-flex;
-				align-items: center;
-				justify-content: center;
-				padding: 0.125rem;
-				border-radius: 0.375rem;
 				color: var(--ink-secondary);
-				transition:
-					color 0.2s,
-					background-color 0.2s;
-
-				&:hover {
-					color: var(--ink-strong);
-					background-color: var(--surface-muted);
-				}
-
-				&:focus-visible {
-					outline: 2px solid var(--accent-blue-600);
-					outline-offset: 2px;
-				}
+				letter-spacing: 0.02em;
 			}
+		}
+	}
+
+	.prompt-slot {
+		min-width: 0;
+		max-width: 56rem;
+		width: 100%;
+		justify-self: center;
+	}
+
+	.actions {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+
+		.tools {
+			display: flex;
+			gap: 0.4rem;
+		}
+		.divider {
+			width: 1px;
+			height: 1.6rem;
+			margin: 0 0.4rem;
+			background: var(--line);
+		}
+	}
+
+	.row-two {
+		grid-column: 1 / 4;
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 2rem;
+		min-width: 0;
+	}
+	.examples {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		min-width: 0;
+		flex: 1 1 auto;
+
+		.examples-label {
+			flex-shrink: 0;
+			font-size: 0.72rem;
+			font-weight: 700;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+			color: var(--ink-muted);
+			max-width: 14rem;
+			white-space: normal;
+			line-height: 1.25;
+		}
+	}
+
+	// Below 1440px the tool buttons drop their text labels (the tooltips keep them).
+	@media (max-width: 1439px) {
+		.tools :global(.icon-btn.with-label .text) {
+			display: none;
+		}
+		.tools :global(.icon-btn.with-label) {
+			padding: 0 0.55rem;
 		}
 	}
 </style>

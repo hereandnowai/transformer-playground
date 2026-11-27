@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { GradientButton } from 'flowbite-svelte';
 	import { BookOpenSolid } from 'flowbite-svelte-icons';
 	import { fade } from 'svelte/transition';
 	import {
@@ -11,6 +10,7 @@
 	} from '~/store';
 	import { textPages } from '~/utils/textbookPages';
 	import TextbookCard from './TextbookCard.svelte';
+	import { storyOpen, landingInView } from '~/store/ui';
 
 	export let showTextCard: boolean = false;
 
@@ -33,19 +33,20 @@
 	}
 </script>
 
-<!-- Floating Book Button -->
-{#if !showTextCard}
+<!-- Button that opens the 22 deep-dive notes (hidden while Story mode is open) -->
+{#if !showTextCard && !$storyOpen && $landingInView}
 	<div class="floating-container" transition:fade={{ duration: 150 }}>
-		<GradientButton
-			pill={true}
-			color="purpleToBlue"
-			class="floating-btn h-14 w-14"
+		<button
+			type="button"
+			class="floating-btn"
+			title="Deep-dive notes: 22 short cards on every part of the diagram"
 			on:click={() => {
 				isTextbookOpen.set(true);
 			}}
 		>
-			<BookOpenSolid class="h-8 w-8" />
-		</GradientButton>
+			<BookOpenSolid class="h-5 w-5" />
+			Deep-dive notes
+		</button>
 	</div>
 {/if}
 
@@ -56,19 +57,32 @@
 <style lang="scss">
 	.floating-container {
 		position: fixed;
-		bottom: 2rem;
-		right: 2rem;
+		bottom: 1.5rem;
+		left: 1.5rem;
 		z-index: $TEXTBOOK_INDEX;
 	}
 
 	.floating-btn {
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		height: 2.75rem;
+		padding: 0 1.15rem 0 0.95rem;
+		border-radius: 999px;
+		background: var(--teal);
+		color: #ffffff;
+		font-weight: 700;
+		font-size: 0.9rem;
+		box-shadow: var(--shadow-md);
 		transition: all 0.2s ease;
 
 		&:hover {
 			transform: translateY(-2px);
-			box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+			box-shadow: var(--shadow-lg);
 		}
+	}
+	:global(html.dark) .floating-btn {
+		color: #0a0a0a;
 	}
 	:root {
 		--textbook-highlight-color: var(--accent-blue-600);
@@ -97,56 +111,18 @@
 	}
 
 	// page - transformer
-	:global(.generate-button) {
-		.highlight-text {
-			display: none;
-		}
-	}
-	:global(.input-form.textbook-highlight .input-btn-group) {
+	:global(.input-form.textbook-highlight .pill) {
 		transition: box-shadow 0.2s ease-in-out;
 		box-shadow: var(--textbook-highlight-shadow-out) !important;
 	}
 
-	:global(.input-form .generate-button.textbook-highlight) {
+	:global(.input-form .generate-button.textbook-highlight),
+	:global(.example-chips.textbook-highlight) {
+		border-radius: 999px;
+		box-shadow:
+			0 0 0 3px var(--surface),
+			0 0 0 6px var(--teal) !important;
 		transition: box-shadow 0.2s ease-in-out;
-		box-shadow: var(--textbook-highlight-shadow-out) !important;
-
-		// animation: textbook-button-blink 2s infinite;
-		border: 1px solid var(--predicted-color);
-		color: var(--predicted-color);
-		position: relative;
-		&::after {
-			content: '👆';
-			display: block;
-			white-space: nowrap;
-			position: absolute;
-			bottom: -2.2rem;
-			right: 0;
-			left: 50%;
-			transform: translateX(-50%);
-			color: var(--textbook-highlight-color);
-			font-size: 2rem;
-			pointer-events: none;
-			animation: finger-poke 1.5s ease-in-out infinite;
-		}
-	}
-
-	:global(.input-form .select-button.textbook-highlight) {
-		position: relative;
-		&::after {
-			content: '👆';
-			display: block;
-			white-space: nowrap;
-			position: absolute;
-			bottom: -2.2rem;
-			right: 0;
-			left: 50%;
-			transform: translateX(-50%);
-			color: var(--textbook-highlight-color);
-			font-size: 2rem;
-			pointer-events: none;
-			animation: finger-poke 1.5s ease-in-out infinite;
-		}
 	}
 
 	// page - architecture

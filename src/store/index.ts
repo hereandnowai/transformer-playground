@@ -16,7 +16,8 @@ export const textbookCurrentPage = writable<number>(0);
 export const textbookPreviousPage = writable<number>(-1);
 export const textbookCurrentPageId = writable<string>(textPages[0].id);
 export const textbookPreviousPageId = writable<string>('');
-export const isTextbookOpen = writable<boolean>(true);
+// Closed by default: Story mode is the guided tour; the textbook stays one click away.
+export const isTextbookOpen = writable<boolean>(false);
 
 // is transformer running?
 export const isModelRunning = writable(false);
@@ -30,6 +31,9 @@ export const inputTextExample = [
 	'On the deserted planet they discovered a',
 	'IEEE VIS conference highlights the'
 ];
+
+/** Short names for the example chips (the full sentence is in the tooltip). */
+export const inputTextExampleShort = ['Visualization', 'AI', 'Spaceship', 'Planet', 'Conference'];
 
 const initialExIdx = 0;
 export const selectedExampleIdx = writable<number>(initialExIdx);

@@ -51,7 +51,7 @@ export const textPages: TextbookPage[] = [
 		on: () => {
 			highlightElements(['.input-form']);
 			if (get(isFetchingModel)) {
-				highlightElements(['.input-form .select-button']);
+				highlightElements(['.example-chips']);
 			} else {
 				highlightElements(['.input-form .generate-button']);
 			}
@@ -59,12 +59,12 @@ export const textPages: TextbookPage[] = [
 		out: () => {
 			removeHighlightFromElements([
 				'.input-form',
-				'.input-form .select-button',
+				'.example-chips',
 				'.input-form .generate-button'
 			]);
 		},
 		complete: () => {
-			removeFingerFromElements(['.input-form .select-button', '.input-form .generate-button']);
+			removeFingerFromElements(['.example-chips', '.input-form .generate-button']);
 		}
 	},
 	{
