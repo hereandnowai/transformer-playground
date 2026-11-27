@@ -5,11 +5,12 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"check": "node scripts/check.mjs",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
-		"deploy": "gh-pages -d build --nojekyll"
+		"deploy": "gh-pages -d build --nojekyll",
+		"check:all": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
 	},
 	"devDependencies": {
 		"@neoconfetti/svelte": "^1.0.0",
