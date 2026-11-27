@@ -42,6 +42,16 @@
 	import BlockTransition from '~/components/BlockTransition.svelte';
 	import QKV from '~/components/QKV.svelte';
 	import Textbook from '~/components/textbook/Textbook.svelte';
+	import { env as transformersEnv } from '@xenova/transformers';
+	import StoryMode from '~/components/playground/StoryMode.svelte';
+	import InsightsDrawer from '~/components/playground/InsightsDrawer.svelte';
+	import WelcomeCard from '~/components/playground/WelcomeCard.svelte';
+	import MobileView from '~/components/playground/MobileView.svelte';
+	import { isCompact, modelLoadProgress, pendingPrompt } from '~/store/ui';
+	import { applySharedState, parseSharedState, syncUrl } from '~/utils/playground/urlState';
+
+	// The tokenizer comes from the Hugging Face Hub; skip the probe for a local copy (a 404).
+	transformersEnv.allowLocalModels = false;
 
 	ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.23.0/dist/';
 	ort.env.logLevel = 'error';
@@ -49,17 +59,33 @@
 	let active = false;
 
 	// fetch model
-	onMount(async () => {
-		const gpt2Tokenizer = await AutoTokenizer.from_pretrained('Xenova/gpt2');
-		active = true;
+	onMount(() => {
+		// A shared link sets the prompt and the sampling settings before the first run.
+		applySharedState(parseSharedState(window.location.search), !$isMobile);
+		const stopUrlSync = syncUrl();
+		let unsubscribe = () => {};
 
-		const unsubscribe = subscribeInputs(gpt2Tokenizer);
+		(async () => {
+			const gpt2Tokenizer = await AutoTokenizer.from_pretrained('Xenova/gpt2');
+			active = true;
 
-		if (!$isMobile) {
-			await fetchModel();
-		}
+			unsubscribe = subscribeInputs(gpt2Tokenizer);
 
-		return unsubscribe;
+			if (!$isMobile) {
+				await fetchModel();
+				// A custom prompt from a shared link runs as soon as the live model is ready.
+				const waiting = $pendingPrompt;
+				if (waiting) {
+					pendingPrompt.set(null);
+					inputText.set(waiting);
+				}
+			}
+		})();
+
+		return () => {
+			stopUrlSync();
+			unsubscribe();
+		};
 	});
 
 	// Fetch model onnx
@@ -70,7 +96,9 @@
 			.map((d, i) => `${base}/model-v2/gpt2.onnx.part${i}`);
 
 		// Fetch from cache
-		const { hasCache, mergedArray } = await fetchAndMergeChunks(chunkUrls);
+		const { hasCache, mergedArray } = await fetchAndMergeChunks(chunkUrls, (share: number) =>
+			modelLoadProgress.set(share)
+		);
 
 		// Create a Blob from the merged array
 		const blob = new Blob([mergedArray], { type: 'application/octet-stream' });
@@ -99,7 +127,8 @@
 					cachedData,
 					tokenizer,
 					temperature: $temperature,
-					sampling: $sampling
+					sampling: $sampling,
+					animate: !$isCompact
 				});
 				return;
 			}
@@ -170,58 +199,65 @@
 	}
 </script>
 
-<div
-	class:active
-	class="main-section h-full w-full"
-	style={`--vector-height: ${$vectorHeight}px;--title-height: ${titleHeight}px;--content-height:${vizHeight - titleHeight}px;`}
->
-	{#if !!$expandedBlock.id}
-		<div
-			class={classNames('dim', `${$expandedBlock.id || ''}`)}
-			transition:fade={{ duration: 100 }}
-		></div>
-		<div
-			class={classNames('dim-partial left', `${$expandedBlock.id || ''}`)}
-			transition:fade={{ duration: 100 }}
-		></div>
-		<div
-			class={classNames('dim-partial right', `${$expandedBlock.id || ''}`)}
-			transition:fade={{ duration: 100 }}
-		></div>
-	{/if}
-	<div class="sankey opacity-1" class:attention={$expandedBlock.id === 'attention'}>
-		<Sankey />
-	</div>
-	<div class="nodes resize-watch">
-		<div class="steps" class:expanded={!!$expandedBlock.id} bind:offsetHeight={vizHeight}>
-			<Embedding className="step" />
-			<div class="blocks relative">
-				<div class="block-steps main" class:initial={$blockIdx === 0}>
-					<QKV className="step" />
-					<Attention className="step" />
-					<Mlp className="step" />
-				</div>
-				<div
-					class="block-steps next"
-					class:hide={!$isOnBlockTransition}
-					class:initial={$blockIdx === 0}
-				>
-					<QKV className="step" />
-					<Attention className="step" />
-					<Mlp className="step" />
-				</div>
-				<div class="transition-watch" class:hide={!$isOnBlockTransition}></div>
-			</div>
-			<SubsequentBlocks className="step" />
-			<LinearSoftmax className="step" />
-		</div>
-		<WeightPopovers />
-		<BlockTransition />
-		{#if !$isMobile}
-			<Textbook showTextCard={$isTextbookOpen} />
+{#if $isCompact}
+	<MobileView ready={active} />
+{:else}
+	<div
+		class:active
+		class="main-section h-full w-full"
+		style={`--vector-height: ${$vectorHeight}px;--title-height: ${titleHeight}px;--content-height:${vizHeight - titleHeight}px;`}
+	>
+		{#if !!$expandedBlock.id}
+			<div
+				class={classNames('dim', `${$expandedBlock.id || ''}`)}
+				transition:fade={{ duration: 100 }}
+			></div>
+			<div
+				class={classNames('dim-partial left', `${$expandedBlock.id || ''}`)}
+				transition:fade={{ duration: 100 }}
+			></div>
+			<div
+				class={classNames('dim-partial right', `${$expandedBlock.id || ''}`)}
+				transition:fade={{ duration: 100 }}
+			></div>
 		{/if}
+		<div class="sankey opacity-1" class:attention={$expandedBlock.id === 'attention'}>
+			<Sankey />
+		</div>
+		<div class="nodes resize-watch">
+			<div class="steps" class:expanded={!!$expandedBlock.id} bind:offsetHeight={vizHeight}>
+				<Embedding className="step" />
+				<div class="blocks relative">
+					<div class="block-steps main" class:initial={$blockIdx === 0}>
+						<QKV className="step" />
+						<Attention className="step" />
+						<Mlp className="step" />
+					</div>
+					<div
+						class="block-steps next"
+						class:hide={!$isOnBlockTransition}
+						class:initial={$blockIdx === 0}
+					>
+						<QKV className="step" />
+						<Attention className="step" />
+						<Mlp className="step" />
+					</div>
+					<div class="transition-watch" class:hide={!$isOnBlockTransition}></div>
+				</div>
+				<SubsequentBlocks className="step" />
+				<LinearSoftmax className="step" />
+			</div>
+			<WeightPopovers />
+			<BlockTransition />
+			{#if !$isMobile}
+				<Textbook showTextCard={$isTextbookOpen} />
+			{/if}
+		</div>
 	</div>
-</div>
+	<StoryMode />
+	<InsightsDrawer />
+	<WelcomeCard />
+{/if}
 
 <style lang="scss">
 	.main-section {

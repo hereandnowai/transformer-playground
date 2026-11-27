@@ -2,74 +2,77 @@
 	import '~/styles/app.css';
 	import '~/styles/theme.css';
 	import '~/styles/global.scss';
+	import type { Snippet } from 'svelte';
+	import { onMount } from 'svelte';
 	import Topbar from '~/components/Topbar.svelte';
 	import { isLoaded, rootRem } from '~/store';
 	import { initTheme, predictedColor } from '~/store/theme';
+	import { isCompact, landingInView } from '~/store/ui';
 	import Article from '~/components/article/Article.svelte';
 	import Footer from '~/components/Footer.svelte';
-	import { onMount } from 'svelte';
-	import { Spinner } from 'flowbite-svelte';
-	import Alert from '~/components/Alert.svelte';
+	import Toast from '~/components/playground/Toast.svelte';
+	import ShortcutsDialog from '~/components/playground/ShortcutsDialog.svelte';
+	import { handleShortcut } from '~/utils/playground/shortcuts';
 
-	let topBarHeight = 0;
-	let scrollLeft = 0;
+	let { children }: { children: Snippet } = $props();
 
-	let minScreenWidth = 1300;
-	let minColumWidth = Math.floor(minScreenWidth / 24) - rootRem * 2;
+	const minScreenWidth = 1300;
+	const minColumWidth = Math.floor(minScreenWidth / 24) - rootRem * 2;
 
-	let intersectionObserver: IntersectionObserver;
-	let tobBarActive = false;
-	let target: HTMLElement;
+	let topBarHeight = $state(0);
+	let scrollLeft = $state(0);
+	let topBarActive = $state(true);
+	let target: HTMLElement | undefined = $state();
 
 	onMount(() => {
 		initTheme();
 		isLoaded.set(true);
 
-		intersectionObserver = new IntersectionObserver(handleIntersection, {
-			root: null,
-			rootMargin: '0px',
-			threshold: 0.2
-		});
+		// The prompt fades out once the visitor scrolls down to the article.
+		const observer = new IntersectionObserver(
+			(entries) =>
+				entries.forEach((entry) => {
+					topBarActive = entry.isIntersecting;
+					landingInView.set(entry.isIntersecting);
+				}),
+			{ threshold: 0.2 }
+		);
+		if (target) observer.observe(target);
 
-		if (target) {
-			intersectionObserver.observe(target);
-		}
-		window.addEventListener('scroll', handleMobileScrollX);
+		// The diagram is wider than small windows; keep the fixed header aligned with it.
+		const onScroll = () => (scrollLeft = window.scrollX || document.documentElement.scrollLeft);
+		window.addEventListener('scroll', onScroll, { passive: true });
 
 		return () => {
-			intersectionObserver.disconnect();
-			window.removeEventListener('scroll', handleMobileScrollX);
+			observer.disconnect();
+			window.removeEventListener('scroll', onScroll);
 		};
 	});
-
-	function handleIntersection(entries: any[]) {
-		entries.forEach((entry: any) => {
-			if (entry.isIntersecting) {
-				tobBarActive = true;
-			} else {
-				tobBarActive = false;
-			}
-		});
-	}
-
-	const handleMobileScrollX = () => {
-		scrollLeft = window.scrollX || document.documentElement.scrollLeft;
-	};
 </script>
+
+<svelte:window onkeydown={handleShortcut} />
+
+<a class="skip-link" href="#main">Skip to the playground</a>
 
 <div
 	id="app"
-	style={`--min-screen-width:${minScreenWidth}px;--min-column-width:${minColumWidth}px;--predicted-color:${$predictedColor};`}
+	class:compact={$isCompact}
+	style={`--min-screen-width:${minScreenWidth}px;--min-column-width:${minColumWidth}px;--predicted-color:${$predictedColor};--header-h:${topBarHeight}px;`}
 >
 	<div id="landing">
-		<header bind:offsetHeight={topBarHeight} style="transform: translateX({-1 * scrollLeft}px);">
-			<Topbar isActive={tobBarActive} />
-		</header>
-		<main id="main" style={`padding-top:${topBarHeight}px`} bind:this={target}>
+		{#if !$isCompact}
+			<header bind:offsetHeight={topBarHeight} style="transform: translateX({-1 * scrollLeft}px);">
+				<Topbar isActive={topBarActive} />
+			</header>
+		{/if}
+		<main id="main" style={$isCompact ? '' : `padding-top:${topBarHeight}px`} bind:this={target}>
 			{#if $isLoaded}
-				<slot />
+				{@render children()}
 			{:else}
-				<div class="flex h-full w-full items-center justify-center"><Spinner color="yellow" /></div>
+				<div class="boot" role="status">
+					<span class="dot"></span><span class="dot"></span><span class="dot"></span>
+					<span class="sr-only">Loading the playground</span>
+				</div>
 			{/if}
 		</main>
 	</div>
@@ -79,16 +82,25 @@
 	<Footer />
 </div>
 
-<!-- <div class="alert">
-	<Alert />
-</div> -->
+<Toast />
+<ShortcutsDialog />
 
 <style lang="scss">
-	.alert {
+	.skip-link {
 		position: fixed;
-		bottom: 1rem;
 		left: 1rem;
-		z-index: 9999;
+		top: -4rem;
+		z-index: $TEXTBOOK_INDEX + 20;
+		padding: 0.6rem 1rem;
+		border-radius: 999px;
+		background: var(--brand);
+		color: var(--brand-ink);
+		font-weight: 800;
+		transition: top 0.2s;
+
+		&:focus {
+			top: 1rem;
+		}
 	}
 
 	#app {
@@ -118,5 +130,59 @@
 	}
 	.article {
 		padding-top: 2rem;
+	}
+
+	// Phones and narrow windows: a normal scrolling page, no minimum width.
+	#app.compact {
+		height: auto;
+		min-width: 0;
+
+		#landing {
+			height: auto;
+			min-width: 0;
+		}
+		main {
+			height: auto;
+			display: block;
+			overflow: visible;
+		}
+		.article {
+			padding: 2rem 1rem 0;
+		}
+	}
+
+	.boot {
+		display: flex;
+		gap: 0.4rem;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		height: 100%;
+
+		.dot {
+			width: 0.6rem;
+			height: 0.6rem;
+			border-radius: 999px;
+			background: var(--brand);
+			animation: bounce 1s infinite ease-in-out;
+			&:nth-child(2) {
+				animation-delay: 0.15s;
+			}
+			&:nth-child(3) {
+				animation-delay: 0.3s;
+			}
+		}
+	}
+	@keyframes bounce {
+		0%,
+		80%,
+		100% {
+			transform: scale(0.6);
+			opacity: 0.5;
+		}
+		40% {
+			transform: scale(1);
+			opacity: 1;
+		}
 	}
 </style>

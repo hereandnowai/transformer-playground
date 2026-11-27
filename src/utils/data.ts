@@ -17,12 +17,15 @@ export const fakeRunWithCachedData = async ({
 	cachedData,
 	tokenizer,
 	temperature,
-	sampling
+	sampling,
+	animate = true
 }: {
 	cachedData: any;
 	tokenizer: PreTrainedTokenizer;
 	temperature: number;
 	sampling: Sampling;
+	/** False when the diagram is not on screen (the phone layout). */
+	animate?: boolean;
 }) => {
 	isModelRunning.set(true);
 
@@ -31,7 +34,7 @@ export const fakeRunWithCachedData = async ({
 	tokenIds.set(cachedData.tokenIds);
 
 	setTimeout(async () => {
-		await showFlowAnimation(cachedData.tokens.length, true);
+		if (animate) await showFlowAnimation(cachedData.tokens.length, true);
 		adjustTemperature({
 			tokenizer,
 			logits: cachedData.logits,
