@@ -245,3 +245,10 @@ body {
 #app[data-spot~='softmax'] .main-section g.path-group.softmax {
 	opacity: 1 !important;
 }
+
+/* Story mode explains each part itself: hide the textbook's pointing-hand hints,
+   which can sit on top of diagram labels. */
+#app[data-story] .textbook-highlight::after,
+#app[data-story] .textbook-highlight *::after {
+	display: none !important;
+}

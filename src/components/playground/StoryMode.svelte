@@ -72,8 +72,11 @@
 		if (!app) return;
 		if ($storyOpen && step.spot.length) app.dataset.spot = step.spot.join(' ');
 		else delete app.dataset.spot;
+		if ($storyOpen) app.dataset.story = 'open';
+		else delete app.dataset.story;
 		return () => {
 			delete app.dataset.spot;
+			delete app.dataset.story;
 		};
 	});
 

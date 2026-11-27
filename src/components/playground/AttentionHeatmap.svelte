@@ -28,9 +28,9 @@
 
 	const labelWidth = $derived(compact ? 64 : 96);
 	const cell = $derived(
-		n ? Math.max(compact ? 12 : 18, Math.min(compact ? 30 : 54, (width - labelWidth) / n)) : 0
+		n ? Math.max(compact ? 12 : 18, Math.min(compact ? 30 : 44, (width - labelWidth) / n)) : 0
 	);
-	const showValues = $derived(!compact && cell >= 40);
+	const showValues = $derived(!compact && cell >= 34);
 
 	const ramp = $derived(
 		$isDark ? interpolateRgb('#1c1c1c', '#ffdb00') : interpolateRgb('#eef4f3', '#004040')
