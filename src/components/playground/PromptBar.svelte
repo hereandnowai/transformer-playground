@@ -142,8 +142,9 @@
 				onpaste={onPaste}
 			></span>
 			{#if showPrediction}
-				{#if /^\s/.test(predicted)}<span class="gap"> </span>{/if}<mark
+				<mark
 					class="prediction"
+					class:spaced={/^\s/.test(predicted)}
 					title="The word GPT-2 picked next">{predicted.trimStart()}</mark
 				>
 			{/if}
@@ -272,8 +273,9 @@
 	:global(html.dark) .prediction {
 		color: var(--brand-ink);
 	}
-	.gap {
-		white-space: pre;
+	// The word's leading space shows as a gap, outside the highlight.
+	.prediction.spaced {
+		margin-left: 0.3em;
 	}
 	.running-dots {
 		flex-shrink: 0;
